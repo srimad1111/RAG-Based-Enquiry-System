@@ -2,7 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    background-color: #080B10;
+    color: #F8FAFC;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
 }
 
+/* Custom Scrollbars for Dark Interface */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Linear/Vercel Technical Grid Background */
+.bg-tech-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.bg-radial-gradient-violet {
+  background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.12) 0%, transparent 60%);
+}
+
+.bg-radial-gradient-blue {
+  background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.10) 0%, transparent 60%);
+}
+
+/* Glass Panels */
+.glass-panel-dark {
+  background: rgba(15, 20, 32, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-elevated {
+  background: rgba(23, 31, 51, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Shimmer Loading Skeleton */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-dark {
+  background: linear-gradient(90deg, #111726 25%, #1A2238 50%, #111726 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}

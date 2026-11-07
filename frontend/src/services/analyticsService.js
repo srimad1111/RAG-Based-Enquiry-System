@@ -10,10 +10,19 @@ export const analyticsService = {
   },
 
   /**
-   * Fetch latest evaluation benchmark report or empty state
+   * Fetch all recorded evaluation runs
    */
-  async getReport() {
-    const response = await apiClient.get('/analytics/report');
+  async getRuns() {
+    const response = await apiClient.get('/analytics/runs');
+    return response.data;
+  },
+
+  /**
+   * Fetch latest evaluation benchmark report or a specific run report
+   */
+  async getReport(runFile = null) {
+    const url = runFile ? `/analytics/report?run_file=${encodeURIComponent(runFile)}` : '/analytics/report';
+    const response = await apiClient.get(url);
     return response.data;
   },
 

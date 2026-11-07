@@ -3,8 +3,8 @@ Phase 6: Analytics & RAG Evaluation API Endpoints.
 Surfaces academic evaluation metrics, RAG Triad scores, version isolation rates,
 and benchmark execution triggers.
 """
-from typing import Any, Dict
-from fastapi import APIRouter, HTTPException, status
+from typing import Any, Dict, List, Optional
+from fastapi import APIRouter, HTTPException, Query, status
 
 from app.core.logging import logger
 from app.services.evaluation_service import evaluation_service
@@ -29,13 +29,26 @@ def get_analytics_overview() -> Dict[str, Any]:
 
 
 @router.get(
-    "/report",
-    summary="Get Latest Evaluation Benchmark Report",
-    description="Fetches the most recently generated RAG evaluation report."
+    "/runs",
+    summary="List Evaluation Benchmark Runs",
+    description="Returns all recorded benchmark runs including live Qwen inference and offline baseline."
 )
-def get_evaluation_report() -> Dict[str, Any]:
+def list_evaluation_runs() -> List[Dict[str, Any]]:
     try:
-        report = evaluation_service.get_latest_report_optional()
+        return evaluation_service.get_runs_index()
+    except Exception as e:
+        logger.error(f"Error fetching evaluation runs: {e}", exc_info=True)
+        return []
+
+
+@router.get(
+    "/report",
+    summary="Get Evaluation Benchmark Report",
+    description="Fetches a specific evaluation run report or the latest report."
+)
+def get_evaluation_report(run_file: Optional[str] = Query(None, description="Specific run JSON filename")) -> Dict[str, Any]:
+    try:
+        report = evaluation_service.get_report_by_name(run_file)
         if not report:
             return {
                 "status": "empty",
