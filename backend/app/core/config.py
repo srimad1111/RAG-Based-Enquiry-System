@@ -37,8 +37,12 @@ class Settings(BaseModel):
     )
 
     # AI / LLM Configuration
+    LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "gemini").lower()
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama3")
+    OLLAMA_TIMEOUT: int = int(os.getenv("OLLAMA_TIMEOUT", "60"))
 
     # Storage & Persistence Paths (relative to backend folder)
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent

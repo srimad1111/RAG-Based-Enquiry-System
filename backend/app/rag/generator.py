@@ -1,19 +1,18 @@
 """
 Phase 5: Grounded Answer Generator with Citations and Version Safety.
-Integrates Query Rewriting, Hybrid Retrieval, and Google Gemini API (with deterministic fallback).
+Integrates Query Rewriting, Hybrid Retrieval, and Interchangeable LLM Providers (Gemini / Ollama).
 Enforces strict multi-version isolation, hallucination abstention, and verifiable source citations.
 """
 import json
-import re
 import sqlite3
-import uuid
 from typing import Any, Dict, List, Optional, Tuple
-import google.generativeai as genai
 
 from app.core.config import get_settings
 from app.core.logging import logger
 from app.database.connection import get_sqlite_path
 from app.models.schemas import CitationItem
+from app.rag.providers.common import synthesize_grounded_fallback
+from app.rag.providers.factory import get_llm_provider
 
 settings = get_settings()
 
@@ -31,27 +30,19 @@ class GroundedAnswerGenerator:
       - Strict version safety (never leaks or borrows features across v1.0, v2.0, v3.0).
       - Verifiable source citations linking directly to retrieved document chunks.
       - Retrieval sufficiency check with graceful abstention and human escalation offer.
-      - Google Gemini API integration with offline extractive fallback synthesizer.
+      - Pluggable LLM Provider architecture (Gemini and Ollama) with offline fallback.
     """
 
-    def __init__(self, model_name: Optional[str] = None):
-        self.model_name = model_name or settings.GEMINI_MODEL
+    def __init__(
+        self,
+        model_name: Optional[str] = None,
+        provider_name: Optional[str] = None
+    ):
+        self.provider_name = (provider_name or settings.LLM_PROVIDER).lower()
+        self.provider = get_llm_provider(self.provider_name)
+        self.model_name = model_name or self.provider.model_name
         self.db_path = get_sqlite_path()
-        self._init_gemini()
-
-    def _init_gemini(self) -> None:
-        """Initialize Google Gemini client if API key is present."""
-        if settings.GEMINI_API_KEY and settings.GEMINI_API_KEY.strip():
-            try:
-                genai.configure(api_key=settings.GEMINI_API_KEY.strip())
-                self._gemini_available = True
-                logger.info(f"Gemini Answer Generator initialized with model: {self.model_name}")
-            except Exception as e:
-                logger.warning(f"Could not configure Gemini client: {e}")
-                self._gemini_available = False
-        else:
-            self._gemini_available = False
-            logger.info("No GEMINI_API_KEY configured; Generator will use grounded extractive fallback engine.")
+        logger.info(f"GroundedAnswerGenerator active provider: {self.provider.provider_name} ({self.provider.model_name})")
 
     # --------------------------------------------------------------------------
     # Retrieval Sufficiency & Abstention Check
@@ -92,7 +83,7 @@ class GroundedAnswerGenerator:
 
         # 3. General low confidence check:
         if (dense_score is not None and dense_score < 0.30) and (sparse_score is None or sparse_score < 0.15):
-            return False, f"Retrieved documentation evidence falls below confidence threshold."
+            return False, "Retrieved documentation evidence falls below confidence threshold."
 
         return True, "Sufficient evidence found."
 
@@ -134,10 +125,9 @@ class GroundedAnswerGenerator:
         citations: List[CitationItem] = []
         for idx, chunk in enumerate(retrieved_chunks, start=1):
             snippet_text = chunk["text_content"]
-            # Clean snippet for citation
             if len(snippet_text) > 250:
                 snippet_text = snippet_text[:250].strip() + "..."
-            
+
             citations.append(CitationItem(
                 citation_id=idx,
                 document_name=chunk["document_name"],
@@ -149,102 +139,25 @@ class GroundedAnswerGenerator:
                 relevance_score=chunk.get("rrf_score", 0.0)
             ))
 
-        # Step 3: Check for Gemini API availability (global or custom)
-        api_key_to_use = custom_api_key or settings.GEMINI_API_KEY
-        if api_key_to_use and api_key_to_use.strip():
-            try:
-                genai.configure(api_key=api_key_to_use.strip())
-                answer_text = self._generate_with_gemini(
-                    question=question,
-                    product_version=product_version,
-                    product_name=product_name,
-                    chunks=retrieved_chunks,
-                    history=conversation_history,
-                    temperature=temperature
-                )
-                return {
-                    "answer": answer_text,
-                    "citations": citations,
-                    "abstained": False,
-                    "model_used": self.model_name
-                }
-            except Exception as e:
-                logger.warning(f"Gemini API call failed: {e}. Utilizing deterministic grounded fallback synthesizer.")
-
-        # Step 4: Deterministic Grounded Fallback Synthesizer
-        fallback_answer = self._synthesize_grounded_fallback(
+        # Step 3: Delegate answer generation to the interchangeable LLM provider
+        provider = get_llm_provider(self.provider_name)
+        answer_text = provider.generate_answer(
             question=question,
             product_version=product_version,
             product_name=product_name,
-            chunks=retrieved_chunks
+            chunks=retrieved_chunks,
+            history=conversation_history,
+            temperature=temperature,
+            custom_api_key=custom_api_key
         )
+
         return {
-            "answer": fallback_answer,
+            "answer": answer_text,
             "citations": citations,
             "abstained": False,
-            "model_used": "extractive-grounded-fallback"
+            "model_used": f"{provider.provider_name}/{provider.model_name}"
         }
 
-    # --------------------------------------------------------------------------
-    # Gemini LLM Generation Engine
-    # --------------------------------------------------------------------------
-    def _generate_with_gemini(
-        self,
-        question: str,
-        product_version: str,
-        product_name: str,
-        chunks: List[Dict[str, Any]],
-        history: Optional[List[Dict[str, str]]] = None,
-        temperature: float = 0.1
-    ) -> str:
-        """Call Gemini API with strict system instructions and context grounding."""
-        # Format context with explicit source markers
-        context_blocks = []
-        for idx, c in enumerate(chunks, start=1):
-            block = (
-                f"[Source {idx}]\n"
-                f"Document: {c['document_name']} ({c['document_type'].upper()})\n"
-                f"Version: {c['product_version']}\n"
-                f"Section: {c['section_title']}\n"
-                f"Page: {c['page_number']}\n"
-                f"Content:\n{c['text_content'].strip()}\n"
-            )
-            context_blocks.append(block)
-        formatted_context = "\n----------------------------------------\n".join(context_blocks)
-
-        system_instruction = (
-            f"You are the official customer support assistant for {product_name} (Target Product Version: {product_version}).\n\n"
-            "STRICT GROUNDING & ANSWERING RULES:\n"
-            f"1. Answer the customer's question using ONLY the retrieved {product_version} documentation context provided below.\n"
-            f"2. Strict Version Boundaries: The user has selected {product_name} {product_version}. Never assume or borrow features, pricing, or settings from other versions (e.g. do not discuss v2.0 scheduled exports or v3.0 AI Copilot when answering for v1.0).\n"
-            "3. Tone: Clear, friendly, simple, and helpful. Avoid unnecessary jargon.\n"
-            "4. Use step-by-step numbered steps where explaining procedures.\n"
-            "5. In-Text Citations: At the end of relevant points or instructions, include citation references matching the source, e.g. [Doc: <doc_name>, Section: <section>, Page: <page>].\n"
-            "6. Hallucination Refusal: If the provided documentation context does not contain enough information to answer the question, state: "
-            f"\"I cannot find verified information regarding this in the available NexaDesk {product_version} documentation. Please contact our support team for assistance.\"\n"
-            "7. Do NOT answer questions using external knowledge outside the provided context."
-        )
-
-        user_prompt = f"DOCUMENTATION CONTEXT:\n{formatted_context}\n\nCUSTOMER QUESTION:\n{question}\n\nSUPPORT ANSWER:"
-
-        # Include prior conversation context if present
-        messages_payload = [system_instruction]
-        if history:
-            history_summary = "\n".join([f"{m.get('role', 'user').capitalize()}: {m.get('content', '')}" for m in history[-4:]])
-            messages_payload.append(f"PREVIOUS CONVERSATION HISTORY:\n{history_summary}\n")
-
-        messages_payload.append(user_prompt)
-
-        model = genai.GenerativeModel(
-            model_name=self.model_name,
-            generation_config={"temperature": temperature}
-        )
-        response = model.generate_content(messages_payload)
-        return response.text.strip()
-
-    # --------------------------------------------------------------------------
-    # Deterministic Grounded Fallback Synthesizer
-    # --------------------------------------------------------------------------
     def _synthesize_grounded_fallback(
         self,
         question: str,
@@ -252,48 +165,8 @@ class GroundedAnswerGenerator:
         product_name: str,
         chunks: List[Dict[str, Any]]
     ) -> str:
-        """
-        High-quality extractive response synthesizer for offline environments.
-        Synthesizes a customer-friendly, step-by-step or explanatory response
-        directly from the actual top retrieved document chunks with verifiable citations.
-        """
-        if not chunks:
-            return ABSTENTION_MESSAGE_TEMPLATE.format(product_version=product_version)
-
-        top_chunk = chunks[0]
-        doc_name = top_chunk["document_name"]
-        section = top_chunk["section_title"]
-        page = top_chunk["page_number"]
-        content = top_chunk["text_content"].strip()
-        citation_tag = f"[Doc: {doc_name}, Section: {section}, Page: {page}]"
-
-        # Split content into logical points
-        paragraphs = [p.strip() for p in content.split("\n\n") if p.strip()]
-
-        response_lines = [
-            f"According to the **{product_name} {product_version}** documentation regarding *{section}*:\n"
-        ]
-
-        # Extract factual statements directly from chunk content
-        extracted_points = []
-        for p in paragraphs:
-            # Clean Markdown heading markers if any
-            clean_p = re.sub(r"^#+\s*", "", p)
-            if clean_p.lower().startswith("nexadesk") or "support" in clean_p.lower() or "tier" in clean_p.lower() or "feature" in clean_p.lower():
-                extracted_points.append(clean_p)
-            elif any(clean_p.startswith(prefix) for prefix in ["1.", "2.", "3.", "-", "*"]):
-                extracted_points.append(clean_p)
-
-        if not extracted_points:
-            extracted_points = paragraphs[:2]
-
-        for pt in extracted_points[:3]:
-            response_lines.append(f"{pt}\n")
-
-        # Append source citation
-        response_lines.append(f"\n*Source Reference:* {citation_tag}")
-
-        return "\n".join(response_lines).strip()
+        """Backward-compatible helper for deterministic extractive fallback synthesis."""
+        return synthesize_grounded_fallback(question, product_version, product_name, chunks)
 
     # --------------------------------------------------------------------------
     # SQLite Conversation History Storage

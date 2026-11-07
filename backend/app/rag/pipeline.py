@@ -425,6 +425,7 @@ class VersionAwareRAGPipeline:
             "pipeline_state": "active",
             "embedding_model": chroma_status["embedding_model"],
             "sparse_model": "BM25Okapi",
+            "llm_provider": self.generator.provider.provider_name,
             "generation_model": self.generator.model_name,
             "supported_versions": settings.SUPPORTED_PRODUCT_VERSIONS,
             "total_documents": sqlite_doc_count,

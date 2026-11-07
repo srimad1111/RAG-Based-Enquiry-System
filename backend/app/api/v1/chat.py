@@ -18,6 +18,7 @@ from app.models.schemas import (
 )
 from app.rag.generator import grounded_generator
 from app.rag.pipeline import rag_pipeline
+from app.rag.providers.factory import list_available_providers
 
 settings = get_settings()
 
@@ -128,16 +129,33 @@ def get_recent_enquiry_logs(limit: int = Query(20, ge=1, le=100)) -> EnquiryHist
 @router.get(
     "/config",
     summary="Get Chat & LLM Engine Configuration",
-    description="Returns current LLM model configuration, API key presence, and supported product versions."
+    description="Returns current LLM provider configuration, active models, and supported product versions."
 )
 def get_chat_configuration() -> Dict[str, Any]:
+    providers_info = list_available_providers()
     return {
         "status": "ready",
-        "llm_model": settings.GEMINI_MODEL,
+        "active_provider": settings.LLM_PROVIDER,
+        "llm_model": settings.OLLAMA_MODEL if settings.LLM_PROVIDER == "ollama" else settings.GEMINI_MODEL,
+        "gemini_model": settings.GEMINI_MODEL,
+        "gemini_api_key_configured": bool(settings.GEMINI_API_KEY and settings.GEMINI_API_KEY.strip()),
+        "ollama_model": settings.OLLAMA_MODEL,
+        "ollama_base_url": settings.OLLAMA_BASE_URL,
         "api_key_configured": bool(settings.GEMINI_API_KEY and settings.GEMINI_API_KEY.strip()),
         "default_version": settings.DEFAULT_PRODUCT_VERSION,
         "supported_versions": settings.SUPPORTED_PRODUCT_VERSIONS,
         "supported_retrieval_modes": ["hybrid", "dense_only", "sparse_only"],
-        "fallback_engine": "extractive-grounded-fallback"
+        "fallback_engine": "extractive-grounded-fallback",
+        "providers_status": providers_info
     }
+
+
+@router.get(
+    "/providers",
+    summary="Get Available LLM Providers Status",
+    description="Lists status and health check for interchangeable Gemini and Ollama providers."
+)
+def get_providers_status() -> Dict[str, Any]:
+    return list_available_providers()
+
 

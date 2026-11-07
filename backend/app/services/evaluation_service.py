@@ -9,6 +9,7 @@ Computes the RAG Triad:
   6. Latency Benchmarks (p50, p90, p95 percentiles)
 """
 import json
+import re
 import sqlite3
 import time
 from pathlib import Path
@@ -111,7 +112,24 @@ class EvaluationService:
                 kw_ratio = 1.0
 
             # Penalize prohibited keywords (cross-version hallucinations)
-            prohibited_hit = any(pkw.lower() in answer for pkw in prohibited_kws)
+            # Allows negative disclaimers (e.g., "scheduled reports are not supported in v1.0")
+            prohibited_hit = False
+            for pkw in prohibited_kws:
+                pkw_lower = pkw.lower()
+                if pkw_lower in answer:
+                    negation_patterns = [
+                        rf"not\s+(?:currently\s+)?supported[^\n.]*{pkw_lower}",
+                        rf"no\s+(?:support\s+for\s+)?{pkw_lower}",
+                        rf"{pkw_lower}[^\n.]*(?:is|are)?\s*(?:not|never)\s+supported",
+                        rf"cannot\s+[^\n.]*{pkw_lower}",
+                        rf"never\s+[^\n.]*{pkw_lower}",
+                        rf"unsupported\s+[^\n.]*{pkw_lower}",
+                    ]
+                    is_negated = any(re.search(pat, answer, re.IGNORECASE) for pat in negation_patterns)
+                    if not is_negated:
+                        prohibited_hit = True
+                        break
+
             citation_bonus = 0.2 if len(citations) > 0 else 0.0
 
             if prohibited_hit:
