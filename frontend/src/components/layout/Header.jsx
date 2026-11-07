@@ -2,15 +2,12 @@ import React from 'react';
 import {
   Menu,
   RefreshCw,
-  Cpu,
-  Layers,
   Sparkles,
-  Database,
+  BookOpen,
   BarChart3,
   LayoutDashboard,
+  Settings,
   Shield,
-  Activity,
-  CheckCircle2,
   ChevronRight,
 } from 'lucide-react';
 import { useSystem } from '../../context/SystemContext';
@@ -31,13 +28,18 @@ export function Header({ activeTab, onOpenMobileMenu, onOpenSettings }) {
     },
     documents: {
       title: 'Knowledge Base',
-      breadcrumb: 'Document Catalog & Chunks',
-      icon: Database,
+      breadcrumb: 'Document Catalog',
+      icon: BookOpen,
     },
     analytics: {
-      title: 'Evaluation & Analytics',
-      breadcrumb: 'Academic RAG Triad Suite',
+      title: 'Analytics',
+      breadcrumb: 'Academic RAG Triad',
       icon: BarChart3,
+    },
+    settings: {
+      title: 'Settings',
+      breadcrumb: 'System & Model Configuration',
+      icon: Settings,
     },
   };
 
@@ -46,7 +48,7 @@ export function Header({ activeTab, onOpenMobileMenu, onOpenSettings }) {
   const versions = ['v1.0', 'v2.0', 'v3.0'];
 
   return (
-    <header className="sticky top-0 z-30 bg-canvas-base/85 backdrop-blur-xl border-b border-white/[0.07] text-white">
+    <header className="sticky top-0 z-30 bg-[#0B1020]/90 backdrop-blur-xl border-b border-white/[0.08] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="h-14 flex items-center justify-between gap-4">
           {/* Left: Mobile Trigger & Breadcrumb Navigation */}
@@ -54,22 +56,22 @@ export function Header({ activeTab, onOpenMobileMenu, onOpenSettings }) {
             <button
               onClick={onOpenMobileMenu}
               className="p-1.5 -ml-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] lg:hidden"
-              aria-label="Open sidebar navigation"
+              aria-label="Open navigation menu"
             >
               <Menu size={18} />
             </button>
 
-            <div className="flex items-center space-x-2 text-xs font-mono min-w-0">
-              <span className="text-slate-500 hidden sm:inline">NexaDesk</span>
-              <ChevronRight size={12} className="text-slate-600 hidden sm:inline" />
-              <div className="flex items-center space-x-2">
-                <TabIcon size={14} className="text-violetAccent-light" />
-                <h1 className="text-sm font-bold text-white tracking-tight truncate">
+            <div className="flex items-center space-x-2 text-xs min-w-0">
+              <span className="text-slate-400 hidden sm:inline font-mono">NexaDesk</span>
+              <ChevronRight size={12} className="text-slate-500 hidden sm:inline" />
+              <div className="flex items-center space-x-1.5">
+                <TabIcon size={14} className="text-accent-blue" />
+                <h1 className="text-sm font-semibold text-white tracking-tight truncate">
                   {currentMeta.title}
                 </h1>
               </div>
               <span className="text-slate-600 hidden md:inline">·</span>
-              <span className="text-[11px] text-slate-400 font-sans hidden md:inline truncate">
+              <span className="text-xs text-slate-300 hidden md:inline truncate">
                 {currentMeta.breadcrumb}
               </span>
             </div>
@@ -78,31 +80,24 @@ export function Header({ activeTab, onOpenMobileMenu, onOpenSettings }) {
           {/* Right: Version Scope & Status Indicators */}
           <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
             {/* Global Product Version Selector */}
-            <div className="flex items-center bg-canvas-card p-0.5 rounded-lg border border-white/[0.07] text-xs">
+            <div className="flex items-center bg-[#141E33] p-0.5 rounded-xl border border-white/[0.08] text-xs">
               <span className="hidden lg:flex items-center space-x-1 px-2 text-[10px] font-mono text-slate-400 uppercase tracking-wider">
-                <Shield size={11} className="text-violetAccent-light" />
+                <Shield size={11} className="text-accent-blue" />
                 <span>Scope</span>
               </span>
               <div className="flex space-x-0.5">
                 {versions.map((ver) => {
                   const isSelected = selectedVersion === ver;
-                  const activeStyle =
-                    ver === 'v1.0'
-                      ? 'bg-blue-600 text-white shadow-sm font-bold'
-                      : ver === 'v2.0'
-                      ? 'bg-violetAccent text-white shadow-glow-violet font-bold'
-                      : 'bg-cyan-600 text-white shadow-sm font-bold';
-
                   return (
                     <button
                       key={ver}
                       onClick={() => setSelectedVersion(ver)}
-                      className={`px-2 py-0.5 rounded-md font-mono text-[11px] font-semibold transition-all ${
+                      className={`px-2.5 py-0.5 rounded-lg font-mono text-xs font-semibold transition-all ${
                         isSelected
-                          ? activeStyle
-                          : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
+                          ? 'bg-accent-blue text-white shadow-sm'
+                          : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
                       }`}
-                      title={`Strict context isolation bounded to NexaDesk ${ver}`}
+                      title={`Context scope isolated to NexaDesk ${ver}`}
                     >
                       {ver}
                     </button>
@@ -111,18 +106,15 @@ export function Header({ activeTab, onOpenMobileMenu, onOpenSettings }) {
               </div>
             </div>
 
-            {/* Model & Backend Telemetry Indicator */}
+            {/* Model & Backend Status */}
             <div
               onClick={onOpenSettings}
-              className="hidden sm:flex items-center space-x-2 px-2.5 py-1 rounded-lg bg-canvas-card border border-white/[0.07] text-xs cursor-pointer hover:border-white/15 transition-colors"
-              title="LLM Provider: Ollama · Model: Qwen 3.5 4B"
+              className="hidden sm:flex items-center space-x-2 px-2.5 py-1 rounded-xl bg-[#141E33] border border-white/[0.08] text-xs cursor-pointer hover:border-white/[0.15] transition-colors"
+              title="Active LLM: Qwen 3.5 4B via Ollama"
             >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emeraldAccent opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emeraldAccent"></span>
-              </span>
-              <span className="font-mono text-[11px] text-slate-300">Qwen 3.5 4B</span>
-              <span className="text-[9px] px-1.5 py-0.2 rounded bg-violetAccent/15 text-violetAccent-light border border-violetAccent/25 font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse" />
+              <span className="font-mono text-xs text-white">Qwen 3.5 4B</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-accent-blue/15 text-accent-blue font-mono font-semibold">
                 Ollama
               </span>
             </div>
@@ -131,10 +123,10 @@ export function Header({ activeTab, onOpenMobileMenu, onOpenSettings }) {
             <button
               onClick={refreshHealth}
               disabled={loading}
-              title="Refresh system diagnostics"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] border border-white/[0.07] bg-canvas-card transition-colors"
+              title="Refresh health telemetry"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] border border-white/[0.08] bg-[#141E33] transition-colors"
             >
-              <RefreshCw size={14} className={loading ? 'animate-spin text-violetAccent-light' : ''} />
+              <RefreshCw size={14} className={loading ? 'animate-spin text-accent-blue' : ''} />
             </button>
           </div>
         </div>

@@ -111,7 +111,7 @@ export function MarkdownRenderer({ content = '', className = '' }) {
         elements.push(
           <pre
             key={`codeblock-${elements.length}`}
-            className="p-3 my-2.5 rounded-xl bg-canvas-void border border-white/10 text-violet-300 font-mono text-xs overflow-x-auto leading-relaxed"
+            className="p-3 my-2.5 rounded-xl bg-[#0B1020] border border-white/10 text-violet-300 font-mono text-xs overflow-x-auto leading-relaxed"
           >
             <code>{codeBlockContent.join('\n')}</code>
           </pre>
@@ -200,7 +200,7 @@ export function MarkdownRenderer({ content = '', className = '' }) {
     elements.push(
       <pre
         key={`codeblock-${elements.length}`}
-        className="p-3 my-2.5 rounded-xl bg-canvas-void border border-white/10 text-violet-300 font-mono text-xs overflow-x-auto leading-relaxed"
+        className="p-3 my-2.5 rounded-xl bg-[#0B1020] border border-white/10 text-violet-300 font-mono text-xs overflow-x-auto leading-relaxed"
       >
         <code>{codeBlockContent.join('\n')}</code>
       </pre>

@@ -4,20 +4,72 @@
 
 @layer base {
   :root {
-    --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   body {
-    background-color: #080B10;
-    color: #F8FAFC;
+    background-color: #0B1020 !important;
+    color: #F1F5FF !important;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #FFFFFF !important;
+  }
+
+  p, span, div, label, li, a, th, td {
+    color: inherit;
+  }
 }
 
-/* Custom Scrollbars for Dark Interface */
+@layer utilities {
+  /* Direct color utilities with full specificity guarantees */
+  .bg-canvas-bg {
+    background-color: #0B1020 !important;
+  }
+  .bg-canvas-sidebar {
+    background-color: #0E1526 !important;
+  }
+  .bg-canvas-card {
+    background-color: #141E33 !important;
+  }
+  .bg-canvas-card-hover:hover {
+    background-color: #1A2845 !important;
+  }
+  .bg-canvas-surface {
+    background-color: #192640 !important;
+  }
+  .bg-canvas-surface-hover:hover {
+    background-color: #213354 !important;
+  }
+  .border-canvas-border {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+  .border-canvas-border-light {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  /* Text color utilities */
+  .text-text-main, .text-main {
+    color: #F1F5FF !important;
+  }
+  .text-text-muted, .text-muted {
+    color: #94A3B8 !important;
+  }
+  .text-text-dim, .text-dim {
+    color: #64748B !important;
+  }
+}
+
+/* Custom Minimalist Scrollbars */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -28,55 +80,15 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: #192640;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #243557;
 }
 
-/* Linear/Vercel Technical Grid Background */
-.bg-tech-grid {
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
-.bg-radial-gradient-violet {
-  background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.12) 0%, transparent 60%);
-}
-
-.bg-radial-gradient-blue {
-  background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.10) 0%, transparent 60%);
-}
-
-/* Glass Panels */
-.glass-panel-dark {
-  background: rgba(15, 20, 32, 0.75);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-panel-elevated {
-  background: rgba(23, 31, 51, 0.85);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Shimmer Loading Skeleton */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.skeleton-dark {
-  background: linear-gradient(90deg, #111726 25%, #1A2238 50%, #111726 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.8s infinite;
+/* Subtle Linear-style Background Glow */
+.bg-ambient-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(79, 140, 255, 0.08) 0%, transparent 60%);
 }

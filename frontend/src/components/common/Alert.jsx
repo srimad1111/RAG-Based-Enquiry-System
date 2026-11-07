@@ -4,29 +4,29 @@ import { AlertCircle, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 export function Alert({ type = 'error', title, message, onRetry }) {
   const styles = {
     error: {
-      bg: 'bg-roseAccent/10 border-roseAccent/30 text-roseAccent-light',
-      icon: <AlertCircle className="w-5 h-5 text-roseAccent flex-shrink-0" />,
+      bg: 'bg-accent-coral/10 border-accent-coral/30 text-accent-coral',
+      icon: <AlertCircle className="w-4 h-4 text-accent-coral flex-shrink-0" />,
     },
     warning: {
-      bg: 'bg-amberAccent/10 border-amberAccent/30 text-amberAccent-light',
-      icon: <AlertTriangle className="w-5 h-5 text-amberAccent flex-shrink-0" />,
+      bg: 'bg-accent-amber/10 border-accent-amber/30 text-accent-amber',
+      icon: <AlertTriangle className="w-4 h-4 text-accent-amber flex-shrink-0" />,
     },
     success: {
-      bg: 'bg-emeraldAccent/10 border-emeraldAccent/30 text-emeraldAccent-light',
-      icon: <CheckCircle2 className="w-5 h-5 text-emeraldAccent flex-shrink-0" />,
+      bg: 'bg-accent-emerald/10 border-accent-emerald/30 text-accent-emerald',
+      icon: <CheckCircle2 className="w-4 h-4 text-accent-emerald flex-shrink-0" />,
     },
     info: {
-      bg: 'bg-violetAccent/10 border-violetAccent/30 text-violetAccent-light',
-      icon: <Info className="w-5 h-5 text-violetAccent flex-shrink-0" />,
+      bg: 'bg-accent-blue/10 border-accent-blue/30 text-accent-blue',
+      icon: <Info className="w-4 h-4 text-accent-blue flex-shrink-0" />,
     },
   }[type] || styles.error;
 
   return (
-    <div className={`border rounded-xl p-4 ${styles.bg} flex items-start space-x-3 text-xs`}>
+    <div className={`border rounded-xl p-3.5 ${styles.bg} flex items-start space-x-3 text-xs`}>
       {styles.icon}
       <div className="flex-1 min-w-0">
-        {title && <h4 className="font-bold text-white text-xs mb-0.5">{title}</h4>}
-        <p className="leading-relaxed">{message}</p>
+        {title && <h4 className="font-semibold text-white text-xs mb-0.5">{title}</h4>}
+        <p className="leading-relaxed text-slate-200">{message}</p>
         {onRetry && (
           <button
             onClick={onRetry}

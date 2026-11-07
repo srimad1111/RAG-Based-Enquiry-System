@@ -6,17 +6,16 @@ import DashboardPage from './pages/DashboardPage';
 import ChatInterface from './components/chat/ChatInterface';
 import DocumentExplorer from './components/documents/DocumentExplorer';
 import AnalyticsView from './components/analytics/AnalyticsView';
-import SettingsModal from './components/common/SettingsModal';
+import SettingsPage from './pages/SettingsPage';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-canvas-base text-slate-100 font-sans flex antialiased selection:bg-violetAccent/30 selection:text-white">
-      {/* Modern Left Sidebar */}
+    <div className="min-h-screen bg-[#0B1020] text-slate-100 font-sans flex antialiased selection:bg-accent-blue/30 selection:text-white bg-ambient-glow">
+      {/* Modern Compact Left Sidebar */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -24,20 +23,19 @@ export function App() {
         setCollapsed={setSidebarCollapsed}
         mobileOpen={mobileMenuOpen}
         setMobileOpen={setMobileMenuOpen}
-        onOpenSettings={() => setSettingsOpen(true)}
       />
 
-      {/* Main Content Workspace Container */}
+      {/* Main Workspace Container */}
       <div
-        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out ${
-          sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'
+        className={`flex-1 flex flex-col min-w-0 transition-all duration-200 ease-in-out ${
+          sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-56'
         }`}
       >
-        {/* Compact Top Header */}
+        {/* Compact Header */}
         <Header
           activeTab={activeTab}
           onOpenMobileMenu={() => setMobileMenuOpen(true)}
-          onOpenSettings={() => setSettingsOpen(true)}
+          onOpenSettings={() => setActiveTab('settings')}
         />
 
         {/* Dynamic Page Views */}
@@ -46,17 +44,12 @@ export function App() {
           {activeTab === 'chat' && <ChatInterface />}
           {activeTab === 'documents' && <DocumentExplorer />}
           {activeTab === 'analytics' && <AnalyticsView />}
+          {activeTab === 'settings' && <SettingsPage />}
         </main>
 
-        {/* Bottom Technology & Capstone Footer */}
+        {/* Minimalist Bottom Footer */}
         <Footer />
       </div>
-
-      {/* System Engine Settings Modal */}
-      <SettingsModal
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-      />
     </div>
   );
 }

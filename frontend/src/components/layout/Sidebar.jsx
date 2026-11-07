@@ -2,51 +2,45 @@ import React from 'react';
 import {
   LayoutDashboard,
   Sparkles,
-  Database,
+  BookOpen,
   BarChart3,
   Settings,
   ChevronLeft,
   ChevronRight,
   Cpu,
-  Layers,
   X,
-  ShieldCheck,
-  Activity,
-  Circle,
+  User,
 } from 'lucide-react';
 import { useSystem } from '../../context/SystemContext';
 
-export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen, onOpenSettings }) {
-  const { health, selectedVersion } = useSystem();
+export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
+  const { health } = useSystem();
 
   const navItems = [
     {
       id: 'dashboard',
       label: 'Overview',
-      sublabel: 'Command Center',
       icon: LayoutDashboard,
-      badge: 'Live',
     },
     {
       id: 'chat',
       label: 'AI Assistant',
-      sublabel: 'Customer Intelligence',
       icon: Sparkles,
-      badge: 'Qwen 4B',
     },
     {
       id: 'documents',
       label: 'Knowledge Base',
-      sublabel: 'Document Catalog',
-      icon: Database,
-      badge: `${health?.stats?.total_documents ?? 18}`,
+      icon: BookOpen,
     },
     {
       id: 'analytics',
-      label: 'Evaluation & Analytics',
-      sublabel: 'Academic RAG Triad',
+      label: 'Analytics',
       icon: BarChart3,
-      badge: 'Phase 7',
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: Settings,
     },
   ];
 
@@ -60,39 +54,34 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
       {/* Mobile Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-canvas-void/80 backdrop-blur-md z-40 lg:hidden"
+          className="fixed inset-0 bg-[#070A14]/80 backdrop-blur-md z-40 lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* Sidebar Root */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-canvas-sidebar border-r border-white/[0.07] text-slate-300 transition-all duration-300 ease-in-out select-none ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#0E1526] border-r border-white/[0.08] text-slate-300 transition-all duration-200 ease-in-out select-none ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        } ${collapsed ? 'w-20' : 'w-64'}`}
+        } ${collapsed ? 'w-16' : 'w-56'}`}
       >
         {/* Brand Header */}
-        <div className="h-16 px-4 flex items-center justify-between border-b border-white/[0.07] bg-canvas-void/40">
-          <div className="flex items-center space-x-3 overflow-hidden">
-            {/* Linear-Style NexaDesk Logo Emblem */}
-            <div className="relative flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-tr from-violetAccent to-blueAccent p-[1px] shadow-glow-violet">
-              <div className="w-full h-full bg-canvas-card rounded-[7px] flex items-center justify-center">
-                <Cpu className="w-4 h-4 text-violetAccent-light" />
+        <div className="h-14 px-3.5 flex items-center justify-between border-b border-white/[0.08]">
+          <div className="flex items-center space-x-2.5 overflow-hidden">
+            {/* Minimalist Logo Emblem */}
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-accent-blue to-accent-violet p-[1px] flex-shrink-0 shadow-glow-blue">
+              <div className="w-full h-full bg-[#141E33] rounded-[7px] flex items-center justify-center">
+                <Cpu className="w-3.5 h-3.5 text-accent-blue" />
               </div>
             </div>
 
             {!collapsed && (
-              <div className="flex flex-col min-w-0">
-                <div className="flex items-center space-x-1.5">
-                  <span className="text-sm font-bold tracking-tight text-white">
-                    NexaDesk
-                  </span>
-                  <span className="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.2 rounded bg-violetAccent/15 text-violetAccent-light border border-violetAccent/30">
-                    AI SAAS
-                  </span>
-                </div>
-                <span className="text-[10px] text-slate-500 font-mono truncate">
-                  Enterprise RAG Engine
+              <div className="flex items-center space-x-1.5 min-w-0">
+                <span className="text-sm font-bold tracking-tight text-white truncate">
+                  NexaDesk
+                </span>
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-accent-blue/15 text-accent-blue border border-accent-blue/20">
+                  AI
                 </span>
               </div>
             )}
@@ -101,21 +90,15 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
           {/* Close trigger for Mobile */}
           <button
             onClick={() => setMobileOpen(false)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] lg:hidden"
+            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] lg:hidden"
             aria-label="Close navigation"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
-        {/* Navigation Items */}
-        <div className="flex-1 py-4 px-2.5 space-y-1 overflow-y-auto">
-          {!collapsed && (
-            <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
-              Platform Navigation
-            </div>
-          )}
-
+        {/* Clean Navigation Items - No Subtitles, No Badges */}
+        <div className="flex-1 py-3 px-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -123,131 +106,72 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobi
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                title={collapsed ? `${item.label} · ${item.sublabel}` : undefined}
-                className={`group relative w-full flex items-center rounded-xl transition-all duration-150 text-left ${
-                  collapsed ? 'justify-center p-3' : 'px-3 py-2.5'
+                title={collapsed ? item.label : undefined}
+                className={`relative w-full flex items-center rounded-xl transition-colors duration-150 text-left ${
+                  collapsed ? 'justify-center p-2.5' : 'px-3 py-2'
                 } ${
                   isActive
-                    ? 'bg-violetAccent/15 text-white shadow-sm border border-violetAccent/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                    ? 'bg-accent-blue/15 text-white font-medium border border-accent-blue/25'
+                    : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
                 {/* Active Indicator Bar */}
                 {isActive && (
-                  <div className="absolute left-0 top-2 bottom-2 w-1 bg-violetAccent rounded-r shadow-glow-violet" />
+                  <div className="absolute left-0 top-1.5 bottom-1.5 w-0.5 bg-accent-blue rounded-r" />
                 )}
 
-                <div className={`flex items-center justify-center ${collapsed ? '' : 'mr-3'}`}>
+                <div className={`flex items-center justify-center ${collapsed ? '' : 'mr-2.5'}`}>
                   <Icon
-                    size={18}
+                    size={16}
                     className={`transition-colors ${
-                      isActive
-                        ? 'text-violetAccent-light drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]'
-                        : 'text-slate-400 group-hover:text-slate-200'
+                      isActive ? 'text-accent-blue' : 'text-slate-400'
                     }`}
                   />
                 </div>
 
                 {!collapsed && (
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className={`text-xs font-semibold truncate ${isActive ? 'text-white' : 'text-slate-300'}`}>
-                        {item.label}
-                      </span>
-                      {item.badge && (
-                        <span
-                          className={`text-[9px] font-mono px-1.5 py-0.5 rounded-md ${
-                            isActive
-                              ? 'bg-violetAccent/20 text-violetAccent-light border border-violetAccent/30'
-                              : 'bg-white/[0.05] text-slate-400 border border-white/[0.05]'
-                          }`}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[10px] text-slate-500 truncate block">
-                      {item.sublabel}
-                    </span>
-                  </div>
+                  <span className={`text-xs truncate font-medium ${isActive ? 'text-white' : 'text-slate-300'}`}>
+                    {item.label}
+                  </span>
                 )}
               </button>
             );
           })}
-
-          {/* Settings Nav Item (Triggers Settings Modal) */}
-          <button
-            onClick={onOpenSettings}
-            title={collapsed ? 'System Engine Settings' : undefined}
-            className={`group w-full flex items-center rounded-xl transition-all duration-150 text-left mt-2 ${
-              collapsed ? 'justify-center p-3' : 'px-3 py-2.5'
-            } text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]`}
-          >
-            <div className={`flex items-center justify-center ${collapsed ? '' : 'mr-3'}`}>
-              <Settings size={18} className="text-slate-400 group-hover:text-slate-200 transition-colors" />
-            </div>
-            {!collapsed && (
-              <div className="flex-1 min-w-0">
-                <span className="text-xs font-semibold text-slate-300 block truncate">
-                  Settings & Telemetry
-                </span>
-                <span className="text-[10px] text-slate-500 truncate block">
-                  Ollama & ChromaDB
-                </span>
-              </div>
-            )}
-          </button>
         </div>
 
-        {/* User / Admin Profile Area & Collapse Toggle */}
-        <div className="p-3 border-t border-white/[0.07] bg-canvas-void/50 space-y-2">
-          {!collapsed ? (
-            <div className="rounded-xl border border-white/[0.06] bg-canvas-card/60 p-2.5 flex items-center justify-between">
-              <div className="flex items-center space-x-2.5 min-w-0">
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-violetAccent to-blueAccent flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0 shadow-sm">
-                  AD
-                </div>
+        {/* Compact Admin Profile & Collapse Trigger at Bottom */}
+        <div className="p-2 border-t border-white/[0.08] space-y-1">
+          {/* Admin Profile */}
+          <div
+            className={`flex items-center rounded-xl p-2 bg-[#141E33] border border-white/[0.08] ${
+              collapsed ? 'justify-center' : 'justify-between'
+            }`}
+          >
+            <div className="flex items-center space-x-2 min-w-0">
+              <div className="w-6 h-6 rounded-full bg-accent-violet/20 border border-accent-violet/30 flex items-center justify-center text-accent-violet flex-shrink-0">
+                <User size={12} />
+              </div>
+              {!collapsed && (
                 <div className="min-w-0">
-                  <div className="flex items-center space-x-1.5">
-                    <span className="text-xs font-semibold text-white truncate">Admin User</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emeraldAccent animate-pulse" />
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-400 truncate block">
-                    NexaDesk {selectedVersion}
+                  <span className="text-xs font-semibold text-white truncate block">
+                    Admin
+                  </span>
+                  <span className="text-[10px] text-slate-400 truncate block font-mono">
+                    NexaDesk Enterprise
                   </span>
                 </div>
-              </div>
-
-              <div className="flex items-center space-x-1">
-                <button
-                  onClick={onOpenSettings}
-                  className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors"
-                  title="Configure Engine"
-                >
-                  <Settings size={14} />
-                </button>
-              </div>
+              )}
             </div>
-          ) : (
-            <div className="flex justify-center py-1">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-violetAccent to-blueAccent flex items-center justify-center text-[10px] font-bold text-white shadow-sm" title={`Admin User · NexaDesk ${selectedVersion}`}>
-                AD
-              </div>
-            </div>
-          )}
+          </div>
 
-          {/* Desktop Collapse Trigger */}
+          {/* Collapse/Expand Toggle */}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex items-center justify-center w-full py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors text-xs font-medium"
-            title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+            className="hidden lg:flex w-full items-center justify-center p-1.5 text-slate-400 hover:text-white hover:bg-white/[0.04] rounded-lg text-xs transition-colors"
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {collapsed ? <ChevronRight size={15} /> : (
-              <div className="flex items-center space-x-1 text-[11px] text-slate-400">
-                <ChevronLeft size={13} />
-                <span>Collapse</span>
-              </div>
-            )}
+            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+            {!collapsed && <span className="ml-1 text-[11px]">Collapse</span>}
           </button>
         </div>
       </aside>
