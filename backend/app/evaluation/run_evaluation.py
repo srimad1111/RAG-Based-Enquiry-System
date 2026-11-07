@@ -1,10 +1,11 @@
 """
 Phase 7: Single Command CLI Runner for Comprehensive RAG Evaluation.
 Usage:
-  python -m app.evaluation.run_evaluation
+  python scripts/run_evaluation.py --mode live_llm --limit 10
   or
-  python scripts/run_evaluation.py
+  python scripts/run_evaluation.py --mode offline_fallback
 """
+import argparse
 import sys
 import time
 from pathlib import Path
@@ -14,6 +15,7 @@ BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
+from app.core.config import get_settings
 from app.database.connection import init_database
 from app.rag.pipeline import rag_pipeline
 from app.evaluation.evaluator import (
@@ -21,13 +23,34 @@ from app.evaluation.evaluator import (
     CSV_REPORT_FILE,
     SUMMARY_JSON_FILE,
     DOCS_ERROR_REPORT_FILE,
+    RUNS_DIR,
 )
+
+settings = get_settings()
 
 
 def run_evaluation_cli():
+    parser = argparse.ArgumentParser(description="NexaDesk Comprehensive RAG Evaluation Benchmark Runner")
+    parser.add_argument(
+        "--mode",
+        choices=["live_llm", "offline_fallback"],
+        default="live_llm",
+        help="Evaluation mode: 'live_llm' (uses active LLM without silent fallback) or 'offline_fallback' (uses heuristic synthesis)"
+    )
+    parser.add_argument(
+        "--limit", "-n",
+        type=int,
+        default=None,
+        help="Limit number of test questions to evaluate (e.g. 10, 20, or None for all 112)"
+    )
+    args = parser.parse_args()
+
     print("=" * 86)
     print("   PROJECT 32: NEXADESK RAG CUSTOMER ENQUIRY SYSTEM - COMPREHENSIVE BENCHMARK   ")
     print("=" * 86)
+    print(f"Evaluation Mode:     {args.mode.upper()}")
+    print(f"Active LLM Provider: {settings.LLM_PROVIDER} (Model: {settings.OLLAMA_MODEL if settings.LLM_PROVIDER == 'ollama' else settings.GEMINI_MODEL})")
+    print(f"Benchmark Question Limit: {args.limit if args.limit else 'ALL (112 Questions)'}")
 
     # 1. Database & ChromaDB Synchronization
     print("\n[1/3] Synchronizing SQLite document chunks with ChromaDB and BM25 index...")
@@ -36,18 +59,20 @@ def run_evaluation_cli():
     print(f"      Verified: {sync_res['total_indexed_in_chroma']} chunks indexed across versions.")
 
     # 2. Run Comprehensive Evaluator
-    evaluator = ComprehensiveRAGEvaluator()
+    evaluator = ComprehensiveRAGEvaluator(mode=args.mode, limit=args.limit)
     total_q = len(evaluator.dataset)
-    print(f"\n[2/3] Executing Evaluation Suite over {total_q} Ground-Truth Test Questions...")
+    print(f"\n[2/3] Executing Evaluation Suite over {total_q} Ground-Truth Test Questions (Mode: {args.mode})...")
     start_t = time.time()
     summary = evaluator.run_full_evaluation()
     total_duration = time.time() - start_t
 
     # 3. Print Rich Results Dashboard
     print("\n" + "=" * 86)
-    print("   PHASE 7: COMPREHENSIVE RAG EVALUATION BENCHMARK RESULTS   ")
+    print(f"   PHASE 7 BENCHMARK RESULTS: [{summary['evaluation_mode'].upper()} - {summary['llm_provider'].upper()} / {summary['model_name']}]   ")
     print("=" * 86)
     print(f"Timestamp:                    {summary['timestamp']}")
+    print(f"Evaluation Mode:              {summary['evaluation_mode']}")
+    print(f"LLM Provider:                 {summary['llm_provider']} (Model: {summary['model_name']})")
     print(f"Total Benchmark Test Cases:   {summary['total_benchmark_cases']}")
     print(f"In-Domain Questions:          {summary['in_domain_cases']}")
     print(f"Out-of-Domain (Abstentions):  {summary['out_of_domain_cases']}")
@@ -105,14 +130,20 @@ def run_evaluation_cli():
     print("6. LATENCY PERCENTILES")
     print("-" * 86)
     lat = summary["latency_benchmarks"]
-    print(f"  * Average: {lat['avg_latency_ms']} ms | p50 (Median): {lat['p50_ms']} ms | p90: {lat['p90_ms']} ms | p95: {lat['p95_ms']} ms")
+    print(f"  * Total Latency:    Avg: {lat['avg_latency_ms']} ms | p50: {lat['p50_ms']} ms | p90: {lat['p90_ms']} ms | p95: {lat['p95_ms']} ms")
+    print(f"  * Breakdown:        Avg Retrieval: {lat.get('avg_retrieval_latency_ms', 0.0)} ms | Avg Generation: {lat.get('avg_generation_latency_ms', 0.0)} ms")
 
     print("\n" + "=" * 86)
     print("7. GENERATED EVALUATION REPORTS & ARTIFACTS")
     print("=" * 86)
-    print(f"  [CSV Dataset Results] : {CSV_REPORT_FILE}")
-    print(f"  [Summary JSON Report] : {SUMMARY_JSON_FILE}")
-    print(f"  [Markdown Error Doc]  : {DOCS_ERROR_REPORT_FILE}")
+    if args.mode == "live_llm":
+        print(f"  [CSV Dataset Results] : {RUNS_DIR / 'evaluation_results_qwen_live_llm.csv'}")
+        print(f"  [Summary JSON Report] : {RUNS_DIR / 'evaluation_summary_qwen_live_llm.json'}")
+        print(f"  [Markdown Error Doc]  : {Path(__file__).resolve().parent.parent.parent.parent / 'docs' / 'qwen_evaluation_error_analysis.md'}")
+    else:
+        print(f"  [CSV Dataset Results] : {CSV_REPORT_FILE}")
+        print(f"  [Summary JSON Report] : {SUMMARY_JSON_FILE}")
+        print(f"  [Markdown Error Doc]  : {DOCS_ERROR_REPORT_FILE}")
     print("=" * 86 + "\n")
 
 

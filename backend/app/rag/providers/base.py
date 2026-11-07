@@ -30,7 +30,8 @@ class BaseLLMProvider(ABC):
         self,
         customer_question: str,
         product_name: str = "NexaDesk",
-        product_version: str = "v3.0"
+        product_version: str = "v3.0",
+        allow_fallback: bool = True
     ) -> Dict[str, Any]:
         """
         Transform an informal customer question into a documentation-oriented query.
@@ -53,7 +54,8 @@ class BaseLLMProvider(ABC):
         chunks: List[Dict[str, Any]],
         history: Optional[List[Dict[str, str]]] = None,
         temperature: float = 0.1,
-        custom_api_key: Optional[str] = None
+        custom_api_key: Optional[str] = None,
+        allow_fallback: bool = True
     ) -> str:
         """
         Generate a strictly grounded customer support answer using retrieved documentation context.

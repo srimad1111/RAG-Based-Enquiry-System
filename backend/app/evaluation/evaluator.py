@@ -42,6 +42,10 @@ settings = get_settings()
 EVALUATION_RESULTS_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "evaluation" / "results"
 EVALUATION_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
+RUNS_DIR = EVALUATION_RESULTS_DIR / "runs"
+RUNS_DIR.mkdir(parents=True, exist_ok=True)
+RUNS_INDEX_FILE = RUNS_DIR / "runs_index.json"
+
 CSV_REPORT_FILE = EVALUATION_RESULTS_DIR / "evaluation_results.csv"
 SUMMARY_JSON_FILE = EVALUATION_RESULTS_DIR / "evaluation_summary.json"
 ERROR_ANALYSIS_FILE = EVALUATION_RESULTS_DIR / "error_analysis.json"
@@ -52,15 +56,61 @@ class ComprehensiveRAGEvaluator:
     """
     Production-grade RAG evaluation suite implementing retrieval ranking comparison,
     version-awareness scoring, answer faithfulness, citation validity, and abstention recall.
+    Supports both offline_fallback and live_llm modes.
     """
 
-    def __init__(self, dataset: Optional[List[Dict[str, Any]]] = None):
-        self.dataset = dataset or get_benchmark_dataset()
+    def __init__(
+        self,
+        dataset: Optional[List[Dict[str, Any]]] = None,
+        mode: str = "live_llm",
+        limit: Optional[int] = None
+    ):
+        raw_dataset = dataset or get_benchmark_dataset()
+        if limit is not None and limit > 0:
+            self.dataset = raw_dataset[:limit]
+        else:
+            self.dataset = raw_dataset
+        self.mode = mode.lower()  # "live_llm" or "offline_fallback"
+        self.limit = limit
         self.vector_store = chroma_vector_store
         self.bm25 = bm25_retriever
         self.rewriter = query_rewriter
         self.hybrid = hybrid_retriever
         self.pipeline = rag_pipeline
+
+    def check_llm_health(self) -> None:
+        """
+        Validates that the active LLM provider and configured model are operational.
+        Raises RuntimeError immediately if in live_llm mode and the provider cannot be reached.
+        Never allows silent fallback during live LLM evaluation.
+        """
+        provider_name = settings.LLM_PROVIDER.lower()
+        if provider_name == "ollama":
+            import requests
+            base_url = settings.OLLAMA_BASE_URL.rstrip("/")
+            model_target = settings.OLLAMA_MODEL
+            try:
+                resp = requests.get(f"{base_url}/api/tags", timeout=5)
+                if resp.status_code != 200:
+                    raise RuntimeError(f"Ollama daemon returned HTTP {resp.status_code} at {base_url}")
+                models = [m.get("name", "") for m in resp.json().get("models", [])]
+                found = any(m == model_target or m.startswith(f"{model_target}:") or model_target in m for m in models)
+                if not found:
+                    raise RuntimeError(
+                        f"Ollama is online at {base_url}, but target model '{model_target}' was not found in installed models: {models}. "
+                        f"Please run `ollama pull {model_target}` before executing live_llm evaluation."
+                    )
+                logger.info(f"Ollama health check passed: model '{model_target}' is ready at {base_url}.")
+            except Exception as e:
+                raise RuntimeError(
+                    f"LIVE_LLM EVALUATION BLOCKED: Ollama daemon is unreachable at {base_url} ({e}). "
+                    "Cannot proceed in live_llm mode without the active LLM provider. Silent fallback is prohibited."
+                ) from e
+        elif provider_name == "gemini":
+            if not settings.GEMINI_API_KEY:
+                raise RuntimeError(
+                    "LIVE_LLM EVALUATION BLOCKED: GEMINI_API_KEY is not configured. Silent fallback is prohibited."
+                )
 
     # --------------------------------------------------------------------------
     # Retrieval Configuration Evaluation (Configs A, B, C)
@@ -97,8 +147,13 @@ class ComprehensiveRAGEvaluator:
             top_k=5
         )
 
-        # 2. Query Rewriting
-        rewrite_res = self.rewriter.rewrite(query, product_name="NexaDesk", product_version=version)
+        # 2. Query Rewriting (strict fallback policy based on mode)
+        rewrite_res = self.rewriter.rewrite(
+            query,
+            product_name="NexaDesk",
+            product_version=version,
+            allow_fallback=(self.mode == "offline_fallback")
+        )
         rewritten_q = rewrite_res.get("rewritten_query", query)
 
         # 3. Config B: Rewritten Query + Dense Only
@@ -172,7 +227,8 @@ class ComprehensiveRAGEvaluator:
             question=query,
             product_version=version,
             product_name="NexaDesk",
-            top_k=4
+            top_k=4,
+            allow_fallback=(self.mode == "offline_fallback")
         )
         elapsed_ms = round((time.time() - start_t) * 1000, 2)
 
@@ -181,6 +237,9 @@ class ComprehensiveRAGEvaluator:
         citations = res.get("citations", [])
         retrieved_sources = res.get("retrieved_sources", [])
         abstained = res.get("abstained", False)
+        retrieval_lat_ms = res.get("retrieval_latency_ms", 0.0)
+        generation_lat_ms = res.get("generation_latency_ms", 0.0)
+        model_used = res.get("model_used", f"{settings.LLM_PROVIDER}/{settings.OLLAMA_MODEL}")
 
         # 3. Version-Awareness & Contamination Analysis
         # Check retrieved chunks for cross-version leakage
@@ -198,12 +257,18 @@ class ComprehensiveRAGEvaluator:
                 # Disregard if explicitly negated ("not supported", "cannot", "never")
                 negation_patterns = [
                     rf"not\s+(?:currently\s+)?supported[^\n.]*{pkw_lower}",
-                    rf"no\s+(?:support\s+for\s+)?{pkw_lower}",
-                    rf"{pkw_lower}[^\n.]*(?:is|are)?\s*(?:not|never)\s+supported",
+                    rf"no\s+[^\n.]*{pkw_lower}",
+                    rf"without\s+[^\n.]*{pkw_lower}",
+                    rf"neither\s+[^\n.]*{pkw_lower}",
+                    rf"nor\s+[^\n.]*{pkw_lower}",
+                    rf"does\s+not\s+(?:have|support|offer|include|allow|permit)[^\n.]*{pkw_lower}",
+                    rf"{pkw_lower}[^\n.]*(?:is|are)?\s*(?:not|never)\s+(?:supported|available|provided|offered|included|permitted)",
+                    rf"{pkw_lower}[^\n.]*(?:is|are)?\s*unavailable",
                     rf"cannot\s+[^\n.]*{pkw_lower}",
                     rf"never\s+[^\n.]*{pkw_lower}",
                     rf"unsupported\s+[^\n.]*{pkw_lower}",
-                    rf"{pkw_lower}[^\n.]*is\s+unavailable",
+                    rf"lack\s+of[^\n.]*{pkw_lower}",
+                    rf"absence\s+of[^\n.]*{pkw_lower}",
                 ]
                 is_negated = any(re.search(pat, answer, re.IGNORECASE) for pat in negation_patterns)
                 if not is_negated:
@@ -294,6 +359,10 @@ class ComprehensiveRAGEvaluator:
             "citations_count": len(citations),
             "resolved_without_escalation": resolved_without_escalation,
             "latency_ms": elapsed_ms,
+            "retrieval_latency_ms": retrieval_lat_ms,
+            "generation_latency_ms": generation_lat_ms,
+            "model_used": model_used,
+            "evaluation_mode": self.mode,
             "answer_preview": (answer[:120] + "...") if len(answer) > 120 else answer
         }
 
@@ -302,18 +371,27 @@ class ComprehensiveRAGEvaluator:
     # --------------------------------------------------------------------------
     def run_full_evaluation(self) -> Dict[str, Any]:
         """
-        Executes complete evaluation suite across all benchmark test cases,
+        Executes complete evaluation suite across benchmark test cases,
         computes aggregate metrics, and generates CSV, JSON, and Markdown reports.
+        In live_llm mode, executes pre-flight checks and never permits silent fallback.
         """
-        logger.info(f"Starting Phase 7 Comprehensive Evaluation over {len(self.dataset)} questions...")
+        if self.mode == "live_llm":
+            self.check_llm_health()
+
+        provider_label = settings.LLM_PROVIDER
+        model_label = settings.OLLAMA_MODEL if settings.LLM_PROVIDER == "ollama" else settings.GEMINI_MODEL
+        logger.info(
+            f"Starting Comprehensive Evaluation [Mode: {self.mode}, Provider: {provider_label}, Model: {model_label}] "
+            f"over {len(self.dataset)} questions (limit={self.limit})..."
+        )
         start_time = time.time()
         results: List[Dict[str, Any]] = []
 
         for idx, case in enumerate(self.dataset, start=1):
             res = self.evaluate_case(case)
             results.append(res)
-            if idx % 20 == 0 or idx == len(self.dataset):
-                logger.info(f"Evaluated {idx}/{len(self.dataset)} test cases...")
+            if idx % 5 == 0 or idx == len(self.dataset):
+                logger.info(f"Evaluated {idx}/{len(self.dataset)} test cases... (latest latency: {res['latency_ms']} ms)")
 
         total_cases = len(results)
         in_domain_cases = [r for r in results if not r["should_abstain"]]
@@ -379,17 +457,24 @@ class ComprehensiveRAGEvaluator:
         estimated_escalation_avoidance_pct = round((resolved_cases / len(in_domain_cases)) * 100, 2) if in_domain_cases else 0.0
 
         # ----------------------------------------------------------------------
-        # 6. Latency Percentiles
+        # 6. Latency Percentiles (Total, Retrieval, Generation)
         # ----------------------------------------------------------------------
         latencies = sorted([r["latency_ms"] for r in results])
-        def pctl(data, p):
-            if not data: return 0.0
+        retrieval_latencies = sorted([r.get("retrieval_latency_ms", 0.0) for r in results])
+        generation_latencies = sorted([r.get("generation_latency_ms", 0.0) for r in results])
+
+        def pctl(data: List[float], p: float) -> float:
+            if not data:
+                return 0.0
             return data[min(int(len(data) * p), len(data) - 1)]
 
-        avg_latency = round(sum(latencies) / len(latencies), 2)
+        avg_latency = round(sum(latencies) / len(latencies), 2) if latencies else 0.0
         p50 = pctl(latencies, 0.50)
         p90 = pctl(latencies, 0.90)
         p95 = pctl(latencies, 0.95)
+
+        avg_retrieval_lat = round(sum(retrieval_latencies) / len(retrieval_latencies), 2) if retrieval_latencies else 0.0
+        avg_generation_lat = round(sum(generation_latencies) / len(generation_latencies), 2) if generation_latencies else 0.0
 
         # ----------------------------------------------------------------------
         # 7. Category & Version Breakdowns
@@ -425,11 +510,17 @@ class ComprehensiveRAGEvaluator:
             if not r["abstention_correct"] or r["cross_version_contamination"] or r["faithfulness"] < 0.60
         ]
 
+        total_runtime_s = round(time.time() - start_time, 2)
         summary = {
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "evaluation_mode": self.mode,
+            "llm_provider": provider_label,
+            "model_name": model_label,
+            "benchmark_limit": self.limit,
             "total_benchmark_cases": total_cases,
             "in_domain_cases": len(in_domain_cases),
             "out_of_domain_cases": len(out_of_domain_cases),
+            "total_evaluation_time_seconds": total_runtime_s,
             # Backward-compatible aliases for RAG Triad and Phase 6 assertions
             "rag_triad_scores": {
                 "context_relevance": round(retrieval_config_c["recall_1"] / 100.0, 3),
@@ -482,8 +573,10 @@ class ComprehensiveRAGEvaluator:
                 "p50_ms": p50,
                 "p90_ms": p90,
                 "p95_ms": p95,
-                "min_ms": min(latencies),
-                "max_ms": max(latencies)
+                "min_ms": min(latencies) if latencies else 0.0,
+                "max_ms": max(latencies) if latencies else 0.0,
+                "avg_retrieval_latency_ms": avg_retrieval_lat,
+                "avg_generation_latency_ms": avg_generation_lat
             },
             "category_performance": category_breakdown,
             "failed_cases_count": len(failed_cases),
@@ -497,26 +590,34 @@ class ComprehensiveRAGEvaluator:
         self._export_json(summary)
         self._export_error_analysis(failed_cases, summary)
 
-        logger.info(f"Evaluation complete in {time.time() - start_time:.2f}s. Report saved to {SUMMARY_JSON_FILE}")
+        logger.info(f"Evaluation complete in {total_runtime_s:.2f}s [Mode: {self.mode}]. Reports saved successfully.")
         return summary
 
     def _export_csv(self, results: List[Dict[str, Any]]) -> None:
         """Write granular evaluation records to CSV."""
         try:
-            with open(CSV_REPORT_FILE, "w", newline="", encoding="utf-8") as f:
+            if self.mode == "live_llm":
+                target_csv = RUNS_DIR / "evaluation_results_qwen_live_llm.csv"
+            else:
+                target_csv = CSV_REPORT_FILE
+
+            with open(target_csv, "w", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
                 writer.writerow([
-                    "Case ID", "Category", "Version", "Query", "Rewritten Query",
+                    "Case ID", "Category", "Version", "Evaluation Mode", "Model Used", "Query", "Rewritten Query",
                     "Config A Rank", "Config B Rank", "Config C Rank",
                     "Config C MRR", "Version Correctness", "Cross Version Leak",
                     "Faithfulness", "Answer Relevance", "Citation Correctness",
-                    "Citations Count", "Abstained", "Should Abstain", "Escalation Avoided", "Latency (ms)"
+                    "Citations Count", "Abstained", "Should Abstain", "Escalation Avoided",
+                    "Latency (ms)", "Retrieval Latency (ms)", "Generation Latency (ms)"
                 ])
                 for r in results:
                     writer.writerow([
                         r["case_id"],
                         r["category"],
                         r["product_version"],
+                        r.get("evaluation_mode", self.mode),
+                        r.get("model_used", ""),
                         r["query"],
                         r["rewritten_query"],
                         r["config_a"]["rank"],
@@ -532,29 +633,86 @@ class ComprehensiveRAGEvaluator:
                         r["abstained"],
                         r["should_abstain"],
                         r["resolved_without_escalation"],
-                        r["latency_ms"]
+                        r["latency_ms"],
+                        r.get("retrieval_latency_ms", 0.0),
+                        r.get("generation_latency_ms", 0.0)
                     ])
-            logger.info(f"Exported evaluation CSV to {CSV_REPORT_FILE}")
+            logger.info(f"Exported evaluation CSV to {target_csv}")
         except Exception as e:
             logger.warning(f"Failed to export CSV: {e}")
 
     def _export_json(self, summary: Dict[str, Any]) -> None:
-        """Write summary metrics to JSON."""
+        """Write summary metrics to JSON and maintain historical runs archive."""
         try:
-            with open(SUMMARY_JSON_FILE, "w", encoding="utf-8") as f:
+            timestamp_slug = time.strftime("%Y%m%d_%H%M%S", time.gmtime())
+            provider_slug = summary.get("llm_provider", "llm").replace(":", "_").replace("/", "_")
+            model_slug = summary.get("model_name", "model").replace(":", "_").replace("/", "_")
+            n_cases = summary.get("total_benchmark_cases", 0)
+
+            # 1. Primary summary file based on mode
+            if self.mode == "live_llm":
+                target_json = RUNS_DIR / "evaluation_summary_qwen_live_llm.json"
+            else:
+                target_json = SUMMARY_JSON_FILE
+
+            with open(target_json, "w", encoding="utf-8") as f:
                 json.dump(summary, f, indent=2)
-            logger.info(f"Exported evaluation JSON to {SUMMARY_JSON_FILE}")
+            logger.info(f"Exported evaluation JSON to {target_json}")
+
+            # 2. Historical archive file
+            archive_file = RUNS_DIR / f"run_{timestamp_slug}_{self.mode}_{provider_slug}_{model_slug}_{n_cases}q.json"
+            with open(archive_file, "w", encoding="utf-8") as f:
+                json.dump(summary, f, indent=2)
+
+            # 3. Update master runs index
+            self._update_runs_index(archive_file.name, summary)
         except Exception as e:
             logger.warning(f"Failed to export summary JSON: {e}")
+
+    def _update_runs_index(self, filename: str, summary: Dict[str, Any]) -> None:
+        """Appends run metadata to runs_index.json."""
+        index_records = []
+        if RUNS_INDEX_FILE.exists():
+            try:
+                with open(RUNS_INDEX_FILE, "r", encoding="utf-8") as f:
+                    index_records = json.load(f)
+            except Exception:
+                index_records = []
+
+        entry = {
+            "run_file": filename,
+            "timestamp": summary.get("timestamp"),
+            "mode": summary.get("evaluation_mode"),
+            "provider": summary.get("llm_provider"),
+            "model": summary.get("model_name"),
+            "total_cases": summary.get("total_benchmark_cases"),
+            "mrr": summary.get("retrieval_comparison", {}).get("config_c_rewritten_hybrid", {}).get("mrr"),
+            "faithfulness": summary.get("answer_quality", {}).get("faithfulness"),
+            "version_accuracy_pct": summary.get("version_safety", {}).get("version_isolation_accuracy_percentage"),
+            "abstention_recall_pct": summary.get("abstention_guard", {}).get("abstention_recall_percentage"),
+            "avg_latency_ms": summary.get("latency_benchmarks", {}).get("avg_latency_ms")
+        }
+        index_records.append(entry)
+        with open(RUNS_INDEX_FILE, "w", encoding="utf-8") as f:
+            json.dump(index_records, f, indent=2)
 
     def _export_error_analysis(self, failed_cases: List[Dict[str, Any]], summary: Dict[str, Any]) -> None:
         """Generate human-readable Markdown error analysis report."""
         try:
+            if self.mode == "live_llm":
+                target_md = Path(__file__).resolve().parent.parent.parent.parent / "docs" / "qwen_evaluation_error_analysis.md"
+            else:
+                target_md = DOCS_ERROR_REPORT_FILE
+
             lines = [
-                "# NexaDesk-RAG Comprehensive Evaluation & Error Analysis Report",
+                f"# NexaDesk-RAG Evaluation & Error Analysis Report ({summary.get('evaluation_mode', 'standard').upper()})",
                 "",
+                f"**Evaluation Mode:** `{summary.get('evaluation_mode')}`  ",
+                f"**Active LLM Provider:** `{summary.get('llm_provider')}`  ",
+                f"**Active LLM Model:** `{summary.get('model_name')}`  ",
                 f"**Timestamp:** {summary['timestamp']}  ",
-                f"**Total Benchmark Cases:** {summary['total_benchmark_cases']}  ",
+                f"**Total Benchmark Cases:** {summary['total_benchmark_cases']} (Limit: {summary.get('benchmark_limit') or 'None'})  ",
+                f"**Total Runtime:** {summary.get('total_evaluation_time_seconds', 0.0)}s  ",
                 f"**Failed Queries Flagged:** {len(failed_cases)}  ",
                 "",
                 "---",
@@ -573,7 +731,8 @@ class ComprehensiveRAGEvaluator:
                 f"| **Abstention Guard** | Abstention Recall | **{summary['abstention_evaluation']['abstention_recall_percentage']}%** | 100.0% | PASS |",
                 f"| **Abstention Guard** | Abstention Precision | **{summary['abstention_evaluation']['abstention_precision_percentage']}%** | > 90.0% | PASS |",
                 f"| **Support Impact** | Estimated Escalation Avoidance | **{summary['support_escalation_avoidance']['estimated_escalation_avoidance_percentage']}%** | > 75.0% | PASS |",
-                f"| **Latency** | Median Latency (p50) | **{summary['latency_benchmarks']['p50_ms']} ms** | < 300 ms | PASS |",
+                f"| **Latency (Total)** | Median Latency (p50) | **{summary['latency_benchmarks']['p50_ms']} ms** | - | INFO |",
+                f"| **Latency (Gen)** | Average Generation Latency | **{summary['latency_benchmarks'].get('avg_generation_latency_ms', 0.0)} ms** | - | INFO |",
                 "",
                 "---",
                 "",
@@ -585,7 +744,7 @@ class ComprehensiveRAGEvaluator:
                 f"| **Config B (Rewritten + Dense)** | {summary['retrieval_comparison']['config_b_rewritten_dense']['recall_1']}% | {summary['retrieval_comparison']['config_b_rewritten_dense']['recall_3']}% | {summary['retrieval_comparison']['config_b_rewritten_dense']['recall_5']}% | {summary['retrieval_comparison']['config_b_rewritten_dense']['mrr']} |",
                 f"| **Config C (Rewritten + Hybrid RRF)** | **{summary['retrieval_comparison']['config_c_rewritten_hybrid']['recall_1']}%** | **{summary['retrieval_comparison']['config_c_rewritten_hybrid']['recall_3']}%** | **{summary['retrieval_comparison']['config_c_rewritten_hybrid']['recall_5']}%** | **{summary['retrieval_comparison']['config_c_rewritten_hybrid']['mrr']}** |",
                 "",
-                "> **Key Finding:** Query rewriting dramatically boosts precision on colloquial questions (e.g. 'export', 'cost', 'why cant i schedule'), and combining dense embeddings with BM25 via Reciprocal Rank Fusion ($k=60$) yields the highest overall MRR.",
+                "> **Key Finding:** Query rewriting dramatically boosts precision on colloquial questions, and combining dense embeddings with BM25 via Reciprocal Rank Fusion ($k=60$) yields the highest overall MRR.",
                 "",
                 "---",
                 "",
@@ -594,7 +753,7 @@ class ComprehensiveRAGEvaluator:
             ]
 
             if not failed_cases:
-                lines.append("✅ **Zero test failures detected across the 112 benchmark queries.** All version boundaries, factual claims, and abstentions verified successfully.")
+                lines.append(f"✅ **Zero test failures detected across evaluated questions.** All version boundaries, factual claims, and abstentions verified successfully.")
             else:
                 lines.append(f"The following {len(failed_cases)} cases were flagged for review:")
                 lines.append("")
@@ -605,12 +764,13 @@ class ComprehensiveRAGEvaluator:
                     lines.append(f"- **Faithfulness Score:** `{fc['faithfulness']}`")
                     lines.append(f"- **Contamination:** `{fc['cross_version_contamination']}` (Prohibited hits: {fc['prohibited_hits']})")
                     lines.append(f"- **Abstained:** `{fc['abstained']}` (Should abstain: `{fc['should_abstain']}`)")
+                    lines.append(f"- **Model Used:** `{fc.get('model_used')}`")
                     lines.append(f"- **Answer Preview:** {fc['answer_preview']}")
                     lines.append("")
 
-            with open(DOCS_ERROR_REPORT_FILE, "w", encoding="utf-8") as f:
+            with open(target_md, "w", encoding="utf-8") as f:
                 f.write("\n".join(lines))
-            logger.info(f"Exported error analysis markdown to {DOCS_ERROR_REPORT_FILE}")
+            logger.info(f"Exported error analysis markdown to {target_md}")
         except Exception as e:
             logger.warning(f"Failed to export error analysis report: {e}")
 

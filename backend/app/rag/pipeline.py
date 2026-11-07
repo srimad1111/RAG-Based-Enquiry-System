@@ -112,7 +112,8 @@ class VersionAwareRAGPipeline:
         sparse_weight: float = 0.4,
         similarity_threshold: float = 0.0,
         document_type: Optional[str] = None,
-        document_name: Optional[str] = None
+        document_name: Optional[str] = None,
+        allow_fallback: bool = True
     ) -> Dict[str, Any]:
         """
         Executes the full Phase 4 retrieval sequence:
@@ -167,7 +168,8 @@ class VersionAwareRAGPipeline:
             rewriting_data = self.rewriter.rewrite(
                 customer_question=clean_question,
                 product_name=product_name,
-                product_version=product_version
+                product_version=product_version,
+                allow_fallback=allow_fallback
             )
             search_query = rewriting_data.get("rewritten_query", clean_question)
 
@@ -314,7 +316,8 @@ class VersionAwareRAGPipeline:
         top_k: int = 4,
         enable_rewriting: bool = True,
         temperature: float = 0.1,
-        api_key: Optional[str] = None
+        api_key: Optional[str] = None,
+        allow_fallback: bool = True
     ) -> Dict[str, Any]:
         """
         Executes complete Phase 5 grounded question answering workflow:
@@ -334,18 +337,22 @@ class VersionAwareRAGPipeline:
         ]
 
         # 2. Execute fresh query rewriting & hybrid retrieval for this turn
+        retrieval_start = time.time()
         retrieval_res = self.execute_hybrid_retrieval(
             customer_question=question,
             product_version=product_version,
             product_name=product_name,
             enable_query_rewriting=enable_rewriting,
             retrieval_mode=retrieval_mode,
-            top_k=top_k
+            top_k=top_k,
+            allow_fallback=allow_fallback
         )
+        retrieval_latency_ms = round((time.time() - retrieval_start) * 1000, 2)
 
         retrieved_chunks = retrieval_res.get("results", [])
 
         # 3. Generate grounded answer with citations
+        gen_start = time.time()
         gen_res = self.generator.generate_grounded_answer(
             question=question,
             product_version=product_version,
@@ -353,8 +360,10 @@ class VersionAwareRAGPipeline:
             conversation_history=formatted_history,
             product_name=product_name,
             temperature=temperature,
-            custom_api_key=api_key
+            custom_api_key=api_key,
+            allow_fallback=allow_fallback
         )
+        generation_latency_ms = round((time.time() - gen_start) * 1000, 2)
 
         elapsed_ms = round((time.time() - start_time) * 1000, 2)
 
@@ -409,8 +418,10 @@ class VersionAwareRAGPipeline:
             "conversation_id": conv_id,
             "product_name": product_name,
             "original_query": question,
-            "model_used": gen_res.get("model_used", "gemini-1.5-flash"),
-            "latency_ms": elapsed_ms
+            "model_used": gen_res.get("model_used", "ollama/qwen3.5:4b"),
+            "latency_ms": elapsed_ms,
+            "retrieval_latency_ms": retrieval_latency_ms,
+            "generation_latency_ms": generation_latency_ms
         }
 
     def get_pipeline_info(self) -> Dict[str, Any]:

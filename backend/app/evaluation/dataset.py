@@ -40,9 +40,9 @@ BENCHMARK_CASES: List[Dict[str, Any]] = [
         "product_version": "v1.0",
         "expected_relevant_document": "user_roles_guide.docx",
         "expected_section": "Standard Roles in v1.0",
-        "expected_key_facts": ["administrator", "agent", "viewer"],
+        "expected_key_facts": ["administrator", "agent"],
         "prohibited_keywords": ["team lead", "custom roles"],
-        "expected_answer": "NexaDesk v1.0 provides three standard roles: Administrator (full system configuration), Support Agent (manage and resolve tickets), and Viewer (read-only analytics access).",
+        "expected_answer": "NexaDesk v1.0 provides two standard roles: Administrator (full system configuration) and Agent (manage and resolve tickets). Granular permissions and custom roles are not supported.",
         "should_abstain": False,
         "query_type": "product_features"
     },

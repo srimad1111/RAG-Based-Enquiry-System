@@ -54,11 +54,12 @@ class OllamaProvider(BaseLLMProvider):
         self,
         customer_question: str,
         product_name: str = "NexaDesk",
-        product_version: str = "v3.0"
+        product_version: str = "v3.0",
+        allow_fallback: bool = False
     ) -> Dict[str, Any]:
         """
-        Rewrite customer question using local Ollama model with structured JSON formatting.
-        Falls back to heuristic rewriter if Ollama is unreachable.
+        Rewrite customer question using local Ollama model (Qwen 3.5 4B) with structured JSON formatting.
+        If allow_fallback is False, raises clear RuntimeError on connection error, timeout, or missing model.
         """
         clean_q = customer_question.strip()
         if not clean_q:
@@ -67,7 +68,7 @@ class OllamaProvider(BaseLLMProvider):
                 "rewritten_query": "",
                 "search_keywords": [],
                 "intent": "general_inquiry",
-                "rewriter_used": "none",
+                "rewriter_used": f"ollama/{self._model_name}",
                 "reasoning": "Empty query"
             }
 
@@ -80,8 +81,10 @@ class OllamaProvider(BaseLLMProvider):
             ],
             "format": "json",
             "stream": False,
+            "think": False,
             "options": {
-                "temperature": 0.1
+                "temperature": 0.1,
+                "num_predict": 512
             }
         }
 
@@ -101,7 +104,21 @@ class OllamaProvider(BaseLLMProvider):
                     msg_content = msg_content[:-3]
                 msg_content = msg_content.strip()
 
-                parsed = json.loads(msg_content)
+                try:
+                    parsed = json.loads(msg_content)
+                except json.JSONDecodeError:
+                    import re
+                    rq_match = re.search(r'"rewritten_query"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"', msg_content)
+                    rewritten_val = rq_match.group(1) if rq_match else clean_q
+                    kw_match = re.findall(r'"([^"\\]+)"', msg_content)
+                    parsed = {
+                        "rewritten_query": rewritten_val,
+                        "search_keywords": [k for k in kw_match if k not in ("rewritten_query", "search_keywords", "intent", "reasoning")][:5],
+                        "intent": "product_inquiry",
+                        "reasoning": "Extracted from structured JSON output"
+                    }
+
+                logger.info(f"Qwen ({self._model_name}) rewrote query successfully: '{clean_q}' -> '{parsed.get('rewritten_query')}'")
                 return {
                     "original_query": clean_q,
                     "rewritten_query": parsed.get("rewritten_query", clean_q),
@@ -110,23 +127,33 @@ class OllamaProvider(BaseLLMProvider):
                     "rewriter_used": f"ollama/{self._model_name}",
                     "reasoning": parsed.get("reasoning", f"Rewritten via local Ollama ({self._model_name})")
                 }
+            elif response.status_code == 404:
+                err_msg = f"Ollama model '{self._model_name}' not found at {self._base_url}. Please run: ollama pull {self._model_name}"
+                logger.error(err_msg)
+                if not allow_fallback:
+                    raise RuntimeError(err_msg)
             else:
-                logger.warning(
-                    f"Ollama API returned HTTP {response.status_code}: {response.text[:200]}. "
-                    "Falling back to heuristic rewriter."
-                )
-        except requests.exceptions.ConnectionError:
-            logger.info(
-                f"Ollama service offline at {self._base_url}. "
-                "Using heuristic query rewriter."
-            )
-        except requests.exceptions.Timeout:
-            logger.warning(
-                f"Ollama request timed out after {self._timeout}s at {self._base_url}. "
-                "Using heuristic query rewriter."
-            )
+                err_msg = f"Ollama API returned HTTP {response.status_code}: {response.text[:200]}"
+                logger.error(err_msg)
+                if not allow_fallback:
+                    raise RuntimeError(err_msg)
+        except requests.exceptions.ConnectionError as e:
+            err_msg = f"Ollama daemon is offline at {self._base_url}. Start it via `ollama serve` to enable local inference."
+            logger.error(err_msg)
+            if not allow_fallback:
+                raise RuntimeError(err_msg) from e
+        except requests.exceptions.Timeout as e:
+            err_msg = f"Ollama request timed out after {self._timeout}s on model '{self._model_name}' at {self._base_url}."
+            logger.error(err_msg)
+            if not allow_fallback:
+                raise RuntimeError(err_msg) from e
         except Exception as e:
-            logger.warning(f"Ollama query rewrite error: {e}. Using heuristic query rewriter.")
+            logger.error(f"Ollama query rewrite error: {e}")
+            if not allow_fallback:
+                raise RuntimeError(f"Ollama query rewrite failed on model '{self._model_name}': {e}") from e
+
+        if not allow_fallback:
+            raise RuntimeError(f"Ollama query rewriting failed and fallback is disabled.")
 
         return heuristic_rewrite(
             clean_q,
@@ -143,13 +170,16 @@ class OllamaProvider(BaseLLMProvider):
         chunks: List[Dict[str, Any]],
         history: Optional[List[Dict[str, str]]] = None,
         temperature: float = 0.1,
-        custom_api_key: Optional[str] = None
+        custom_api_key: Optional[str] = None,
+        allow_fallback: bool = False
     ) -> str:
         """
-        Generate grounded answer using local Ollama model with context injection.
-        Falls back to extractive synthesis if Ollama is unreachable.
+        Generate grounded answer using local Ollama model (Qwen 3.5 4B) with context injection.
+        If allow_fallback is False, raises clear RuntimeError on connection error, timeout, or missing model.
         """
         if not chunks:
+            if not allow_fallback:
+                raise RuntimeError("No documentation chunks provided for answer generation.")
             return synthesize_grounded_fallback(question, product_version, product_name, chunks)
 
         system_prompt = build_answer_generation_system_prompt(product_name, product_version)
@@ -175,8 +205,10 @@ class OllamaProvider(BaseLLMProvider):
             "model": self._model_name,
             "messages": messages,
             "stream": False,
+            "think": False,
             "options": {
-                "temperature": temperature
+                "temperature": temperature,
+                "num_predict": 512
             }
         }
 
@@ -187,24 +219,35 @@ class OllamaProvider(BaseLLMProvider):
                 res_data = response.json()
                 content = res_data.get("message", {}).get("content", "").strip()
                 if content:
+                    logger.info(f"Qwen ({self._model_name}) generated grounded answer ({len(content)} chars)")
                     return content
+            elif response.status_code == 404:
+                err_msg = f"Ollama model '{self._model_name}' not found at {self._base_url}. Please run: ollama pull {self._model_name}"
+                logger.error(err_msg)
+                if not allow_fallback:
+                    raise RuntimeError(err_msg)
             else:
-                logger.warning(
-                    f"Ollama API returned HTTP {response.status_code}: {response.text[:200]}. "
-                    "Using grounded fallback synthesis."
-                )
-        except requests.exceptions.ConnectionError:
-            logger.info(
-                f"Ollama service offline at {self._base_url}. "
-                "Using grounded extractive fallback engine."
-            )
-        except requests.exceptions.Timeout:
-            logger.warning(
-                f"Ollama answer generation timed out after {self._timeout}s at {self._base_url}. "
-                "Using grounded fallback synthesis."
-            )
+                err_msg = f"Ollama API returned HTTP {response.status_code}: {response.text[:200]}"
+                logger.error(err_msg)
+                if not allow_fallback:
+                    raise RuntimeError(err_msg)
+        except requests.exceptions.ConnectionError as e:
+            err_msg = f"Ollama daemon is offline at {self._base_url}. Start it via `ollama serve` to enable local inference."
+            logger.error(err_msg)
+            if not allow_fallback:
+                raise RuntimeError(err_msg) from e
+        except requests.exceptions.Timeout as e:
+            err_msg = f"Ollama answer generation timed out after {self._timeout}s on model '{self._model_name}' at {self._base_url}."
+            logger.error(err_msg)
+            if not allow_fallback:
+                raise RuntimeError(err_msg) from e
         except Exception as e:
-            logger.warning(f"Ollama answer generation error: {e}. Using grounded fallback synthesis.")
+            logger.error(f"Ollama answer generation error: {e}")
+            if not allow_fallback:
+                raise RuntimeError(f"Ollama answer generation failed on model '{self._model_name}': {e}") from e
+
+        if not allow_fallback:
+            raise RuntimeError(f"Ollama answer generation failed and fallback is disabled.")
 
         return synthesize_grounded_fallback(question, product_version, product_name, chunks)
 

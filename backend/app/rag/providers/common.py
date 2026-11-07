@@ -78,9 +78,9 @@ def build_query_rewrite_system_prompt(product_name: str, product_version: str) -
         "into formal, documentation-oriented search queries suitable for dense vector and BM25 search.\n\n"
         "STRICT RULES:\n"
         "1. Preserve the user's core intent faithfully.\n"
-        "2. Convert conversational phrasing ('Why can't I schedule my reports like before?') into official documentation terms ('Scheduled report export functionality, configuration and availability').\n"
-        "3. Extract key technical keywords and entities.\n"
-        "4. NEVER invent or hallucinate product features not implied by the question.\n"
+        "2. Convert conversational phrasing into concise, professional technical search terminology.\n"
+        "3. Extract key technical keywords and entities directly related to the user's specific question.\n"
+        "4. NEVER invent or hallucinate unmentioned product features. If the inquiry is unrelated to the product (e.g., general knowledge or cooking), do not map it to product features.\n"
         "5. Return ONLY a valid JSON object with the following schema, and no extra prose:\n"
         "{\n"
         '  "rewritten_query": "string",\n'

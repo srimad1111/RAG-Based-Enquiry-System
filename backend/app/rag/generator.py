@@ -98,7 +98,8 @@ class GroundedAnswerGenerator:
         conversation_history: Optional[List[Dict[str, str]]] = None,
         product_name: str = "NexaDesk",
         temperature: float = 0.1,
-        custom_api_key: Optional[str] = None
+        custom_api_key: Optional[str] = None,
+        allow_fallback: bool = True
     ) -> Dict[str, Any]:
         """
         Generate a customer-friendly, grounded answer with citations.
@@ -148,8 +149,28 @@ class GroundedAnswerGenerator:
             chunks=retrieved_chunks,
             history=conversation_history,
             temperature=temperature,
-            custom_api_key=custom_api_key
+            custom_api_key=custom_api_key,
+            allow_fallback=allow_fallback
         )
+
+        # Check if the LLM output indicates an explicit abstention / refusal
+        abstention_signatures = [
+            "cannot find verified information",
+            "not find verified information",
+            "could not be verified from the available documentation",
+            "cannot be verified from the available documentation",
+            "not mentioned in the available documentation",
+            "insufficient information in the provided documentation",
+            "please contact our support team for assistance"
+        ]
+        is_llm_abstention = any(sig in answer_text.lower() for sig in abstention_signatures)
+        if is_llm_abstention:
+            return {
+                "answer": answer_text,
+                "citations": [],
+                "abstained": True,
+                "model_used": f"{provider.provider_name}/{provider.model_name}"
+            }
 
         return {
             "answer": answer_text,

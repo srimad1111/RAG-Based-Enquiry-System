@@ -35,7 +35,8 @@ class QueryRewriter:
         self,
         customer_question: str,
         product_name: str = "NexaDesk",
-        product_version: str = "v3.0"
+        product_version: str = "v3.0",
+        allow_fallback: bool = True
     ) -> Dict[str, Any]:
         """
         Rewrite an informal customer question into a documentation-oriented query.
@@ -50,7 +51,8 @@ class QueryRewriter:
         return self.provider.rewrite_query(
             customer_question=customer_question,
             product_name=product_name,
-            product_version=product_version
+            product_version=product_version,
+            allow_fallback=allow_fallback
         )
 
     def _heuristic_rewrite(
