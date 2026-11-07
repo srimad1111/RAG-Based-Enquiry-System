@@ -1,0 +1,8 @@
+=== NexaDesk v3.0 Pricing Tiers ===
+
+[Enterprise AI Subscription Plans]
+Growth Tier: $99 per agent per month, includes NexaFlow Studio and 1,000 AI Copilot credits.
+Scale Tier: $189 per agent per month, includes SAML SSO, 10 brands, 5,000 AI credits.
+Enterprise Tier: Custom pricing, unlimited brands, private VPC deployment, 99.99% uptime SLA.
+
+Annual Discount: 20% discount on all annual subscriptions.

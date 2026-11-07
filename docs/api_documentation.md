@@ -9,142 +9,124 @@
 ## 1. System & Health Endpoints
 
 ### 1.1 Root Endpoint
-- **Method:** `GET`
-- **Path:** `/`
+- **Method:** `GET /`
 - **Description:** Returns basic project status, API version, and documentation links.
-- **Response `200 OK`:**
-  ```json
-  {
-    "project": "NexaDesk RAG Customer Enquiry System",
-    "version": "1.0.0",
-    "status": "operational",
-    "documentation": "/docs",
-    "health_check": "/api/v1/health",
-    "supported_versions": ["v1.0", "v2.0", "v3.0"]
-  }
-  ```
-
----
 
 ### 1.2 Full System Health Check
-- **Method:** `GET`
-- **Path:** `/api/v1/health`
+- **Method:** `GET /api/v1/health`
 - **Description:** Performs end-to-end diagnostics on all backend subsystems.
-- **Response `200 OK`:**
-  ```json
-  {
-    "status": "healthy",
-    "timestamp": "2026-11-07T10:30:00.000000",
-    "app_name": "NexaDesk RAG Customer Enquiry System",
-    "version": "1.0.0",
-    "environment": "development",
-    "components": {
-      "api_core": {
-        "status": "healthy",
-        "message": "FastAPI application router and middleware active"
-      },
-      "sqlite_database": {
-        "status": "healthy",
-        "message": "SQLite database connected and tables verified"
-      },
-      "chroma_storage": {
-        "status": "healthy",
-        "message": "ChromaDB persistent directory exists and is writable"
-      },
-      "file_storage": {
-        "status": "healthy",
-        "message": "All required upload and data directories are verified"
-      },
-      "gemini_api": {
-        "status": "standby",
-        "message": "Placeholder key present; awaiting API key for Phase 2"
-      }
-    }
-  }
-  ```
-
----
 
 ### 1.3 Ping Probe
-- **Method:** `GET`
-- **Path:** `/api/v1/health/ping`
+- **Method:** `GET /api/v1/health/ping`
 - **Description:** Lightweight liveness probe for load balancers.
-- **Response `200 OK`:**
-  ```json
-  {
-    "ping": "pong"
-  }
-  ```
-
----
 
 ### 1.4 System Metadata & Configuration
-- **Method:** `GET`
-- **Path:** `/api/v1/system/info`
+- **Method:** `GET /api/v1/system/info`
 - **Description:** Returns product versioning configuration and storage directory mappings.
-- **Response `200 OK`:**
-  ```json
-  {
-    "project_name": "NexaDesk RAG Customer Enquiry System",
-    "app_version": "1.0.0",
-    "environment": "development",
-    "default_product_version": "v3.0",
-    "supported_product_versions": ["v1.0", "v2.0", "v3.0"],
-    "storage_directories": {
-      "chroma_db": "D:\\EMESYS\\...\\storage\\chroma_db",
-      "uploads": "D:\\EMESYS\\...\\storage\\uploads",
-      "documents": "D:\\EMESYS\\...\\data\\documents\\NexaDesk",
-      "sqlite_db": "D:\\EMESYS\\...\\app\\database\\nexadesk.db"
-    },
-    "rag_status": "Phase 1: Foundation & Scaffold (scaffolded)"
-  }
-  ```
 
 ---
 
-## 2. Documentation Catalog Endpoints
+## 2. Document Ingestion & Processing Endpoints (Phase 2)
 
-### 2.1 Multi-Version Documentation Overview
-- **Method:** `GET`
-- **Path:** `/api/v1/documents/overview`
-- **Description:** Scans and lists all documentation files across v1.0, v2.0, and v3.0.
+### 2.1 Admin Document Upload
+- **Method:** `POST /api/v1/documents/upload`
+- **Content-Type:** `multipart/form-data`
+- **Form Fields:**
+  - `file`: Binary file (.pdf, .docx, .txt, .md)
+  - `product_name`: Fictional product name (e.g. `NexaDesk`)
+  - `product_version`: Target release version (`v1.0`, `v2.0`, `v3.0`)
+  - `category`: Documentation category (e.g. `User Guide`, `SLA & Protocols`, `Pricing & Quotas`, `Access Control & Roles`)
+  - `chunk_size`: Max chunk characters (default: `800`)
+  - `chunk_overlap`: Chunk overlap characters (default: `150`)
+  - `replace_existing`: Boolean (`true`/`false`)
+- **Status Codes:**
+  - `201 Created`: Document successfully extracted, chunked, and saved in SQLite.
+  - `409 Conflict`: Duplicate document detected (SHA-256 or name+version collision) when `replace_existing=false`.
+  - `422 Unprocessable Entity`: Validation failure (unsupported extension or invalid version).
+
+### 2.2 List Ingested Documents
+- **Method:** `GET /api/v1/documents`
+- **Query Parameters:**
+  - `product_version`: Filter by release version (`v1.0`, `v2.0`, `v3.0`)
+  - `category`: Filter by category string
+  - `document_type`: Filter by format (`pdf`, `docx`, `txt`, `md`)
 - **Response `200 OK`:**
   ```json
   {
-    "product_name": "NexaDesk",
-    "total_documents": 9,
-    "versions": [
+    "total_documents": 18,
+    "total_chunks": 36,
+    "documents": [
       {
-        "version": "v1.0",
-        "file_count": 3,
-        "files": ["getting_started.md", "pricing_and_plans.md", "ticket_management.md"]
-      },
-      {
-        "version": "v2.0",
-        "file_count": 3,
-        "files": ["automations_and_routing.md", "getting_started.md", "pricing_and_plans.md"]
-      },
-      {
-        "version": "v3.0",
-        "file_count": 3,
-        "files": ["ai_copilot_features.md", "getting_started.md", "pricing_and_plans.md"]
+        "id": "doc_6730a1d0b1e4",
+        "document_name": "email_and_sla_policy.pdf",
+        "product_name": "NexaDesk",
+        "product_version": "v1.0",
+        "category": "SLA & Protocols",
+        "document_type": "pdf",
+        "chunk_count": 2,
+        "status": "completed",
+        "created_at": "2026-11-07 11:21:13"
       }
     ]
   }
   ```
 
----
-
-## 3. Standard Error Envelope
-All error responses follow a uniform JSON structure:
-```json
-{
-  "success": false,
-  "error": {
-    "code": 404,
-    "message": "Resource not found",
-    "path": "/api/v1/unknown"
+### 2.3 Get Ingestion Statistics
+- **Method:** `GET /api/v1/documents/stats/overview`
+- **Response `200 OK`:**
+  ```json
+  {
+    "total_documents": 18,
+    "total_chunks": 36,
+    "by_version": {
+      "v1.0": { "documents": 6, "chunks": 12 },
+      "v2.0": { "documents": 6, "chunks": 12 },
+      "v3.0": { "documents": 6, "chunks": 12 }
+    },
+    "by_type": {
+      "pdf": 3,
+      "docx": 3,
+      "txt": 3,
+      "md": 9
+    }
   }
-}
-```
+  ```
 
+### 2.4 Get Document Chunks & Metadata
+- **Method:** `GET /api/v1/documents/{document_id}/chunks`
+- **Response `200 OK`:**
+  ```json
+  [
+    {
+      "id": "doc_6730a1d0b1e4_c0001",
+      "document_id": "doc_6730a1d0b1e4",
+      "chunk_index": 1,
+      "text_content": "POP3 Email Polling Configuration...",
+      "char_count": 482,
+      "section_title": "POP3 Email Polling Configuration",
+      "page_number": 1,
+      "metadata": {
+        "document_id": "doc_6730a1d0b1e4",
+        "document_name": "email_and_sla_policy.pdf",
+        "product_name": "NexaDesk",
+        "product_version": "v1.0",
+        "document_type": "pdf",
+        "section_title": "POP3 Email Polling Configuration",
+        "page_number": 1,
+        "upload_timestamp": "2026-11-07T11:21:13.123456Z",
+        "chunk_id": "doc_6730a1d0b1e4_c0001",
+        "category": "SLA & Protocols"
+      }
+    }
+  ]
+  ```
+
+### 2.5 Delete Document
+- **Method:** `DELETE /api/v1/documents/{document_id}`
+- **Response `200 OK`:**
+  ```json
+  {
+    "success": true,
+    "message": "Document 'doc_6730a1d0b1e4' and all associated chunks were successfully deleted."
+  }
+  ```

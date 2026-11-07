@@ -1,0 +1,8 @@
+=== NexaDesk v1.0 Pricing Tiers ===
+
+[Monthly Subscription Tiers]
+Free Community: Free for up to 2 agents, 100 tickets per month.
+Starter Tier: $19 per agent per month, unlimited tickets, standard email support.
+Pro Tier: $49 per agent per month, custom email domain, priority queue.
+
+Billing Policy: All billing is month-to-month. Annual pre-payment discounts are not offered in v1.0.

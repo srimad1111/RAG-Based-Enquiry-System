@@ -45,6 +45,7 @@ class Settings(BaseModel):
     CHROMA_PERSIST_DIRECTORY: str = os.getenv("CHROMA_PERSIST_DIRECTORY", "storage/chroma_db")
     UPLOADS_DIRECTORY: str = os.getenv("UPLOADS_DIRECTORY", "storage/uploads")
     DOCUMENTS_DIRECTORY: str = os.getenv("DOCUMENTS_DIRECTORY", "data/documents/NexaDesk")
+    PROCESSED_DIRECTORY: str = os.getenv("PROCESSED_DIRECTORY", "data/processed")
     SQLITE_DB_PATH: str = os.getenv("SQLITE_DB_PATH", "app/database/nexadesk.db")
 
     # Product Versioning
@@ -52,6 +53,11 @@ class Settings(BaseModel):
     SUPPORTED_PRODUCT_VERSIONS: List[str] = _parse_list(
         os.getenv("SUPPORTED_PRODUCT_VERSIONS", "v1.0,v2.0,v3.0")
     )
+
+    # Ingestion & Chunking Parameters (Phase 2)
+    DEFAULT_CHUNK_SIZE: int = int(os.getenv("DEFAULT_CHUNK_SIZE", 800))
+    DEFAULT_CHUNK_OVERLAP: int = int(os.getenv("DEFAULT_CHUNK_OVERLAP", 150))
+    SUPPORTED_EXTENSIONS: List[str] = [".pdf", ".docx", ".txt", ".md", ".markdown"]
 
     @property
     def chroma_path(self) -> Path:
@@ -64,6 +70,10 @@ class Settings(BaseModel):
     @property
     def documents_path(self) -> Path:
         return (self.BASE_DIR / self.DOCUMENTS_DIRECTORY).resolve()
+
+    @property
+    def processed_path(self) -> Path:
+        return (self.BASE_DIR / self.PROCESSED_DIRECTORY).resolve()
 
     @property
     def sqlite_path(self) -> Path:

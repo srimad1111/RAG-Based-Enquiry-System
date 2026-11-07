@@ -1,0 +1,8 @@
+=== NexaDesk v2.0 Pricing Tiers ===
+
+[Revised Subscription Plans]
+Starter Tier: $29 per agent per month, includes Live Chat widget, up to 5 agents.
+Growth Tier: $79 per agent per month, includes Round-Robin routing and Slack integration.
+Enterprise Tier: $149 per agent per month, custom SLA schedules, dedicated account manager.
+
+Annual Discount: 15% discount applies when paying annually upfront.
