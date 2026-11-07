@@ -50,59 +50,93 @@ graph TD
 
 ---
 
-## 2. Curated Benchmark Dataset
+## 2. Curated Benchmark Dataset (112 Ground-Truth Cases)
 
-The evaluation suite operates on `backend/data/evaluation/benchmark_dataset.json` containing 15 test cases specifically designed to expose temporal version confusion:
+The evaluation suite operates on `backend/data/evaluation/benchmark_dataset.json` containing 112 ground-truth annotated cases spanning all 10 required enquiry categories:
 
-| Case ID | Version | Query | Query Type | Expected Document | Prohibited Keywords |
-|---|---|---|---|---|---|
-| `v1_export_01` | `v1.0` | "Why can't I schedule my reports like before?" | Version-Differentiating | `reporting_and_exports.md` | `["scheduled"]` *(unless negated)* |
-| `v2_export_01` | `v2.0` | "Can I schedule report exports to run weekly?" | Version-Differentiating | `reporting_and_exports.md` | `["ai copilot"]` |
-| `v3_export_01` | `v3.0` | "How do automated report exports and AI summaries work?" | Version-Differentiating | `reporting_and_exports.md` | `["csv only"]` |
-| `v1_pricing_01`| `v1.0` | "What are the pricing tiers and user limits?" | Pricing & Quota | `pricing_and_plans.md` | `["nexaflow", "copilot"]` |
-| `v2_pricing_01`| `v2.0` | "What is the annual billing discount and pricing?" | Pricing & Quota | `pricing_and_plans.md` | `["custom enterprise quote"]`|
-| `v3_pricing_01`| `v3.0` | "What are the Growth and Scale tier quotas?" | Pricing & Quota | `pricing_and_plans.md` | `["$19/month"]` |
-| `v2_routing_01`| `v2.0` | "How do round robin ticket assignment rules work?" | Configuration | `automations_and_routing.md` | `["nexaflow studio"]` |
-| `v3_copilot_01`| `v3.0` | "What can the AI Copilot do for ticket triage?" | New Capability | `automations_and_routing.md` | `["manual tagging only"]`|
-| `out_of_domain_01`| `v1.0` | "What is the authentic recipe for baking chocolate chip cookies?" | Out-of-Domain | *None* | `[Must Abstain]` |
-| `out_of_domain_02`| `v3.0` | "Who won the FIFA World Cup in 2022?" | Out-of-Domain | *None* | `[Must Abstain]` |
+1. **Product Features:** Ticketing lifecycles, user roles, system requirements across v1.0, v2.0, and v3.0.
+2. **Account Management:** Subscription plans, pricing tiers, billing cycles, SAML SSO, password resets.
+3. **Report Generation:** Manual CSV exports (v1.0), Scheduled reports (v2.0), Automated AI executive summaries (v3.0).
+4. **Troubleshooting:** IMAP email ingestion timeouts, webhook delivery retries, Redis cache sync issues.
+5. **Notifications:** Email alerts, Slack integration webhooks, in-app bell center notifications.
+6. **Customer Management:** Contact profiles, custom field metadata, customer audit logs.
+7. **Version-Specific Disambiguation:** Temporal isolation tests exposing feature evolution between versions.
+8. **Unsupported Features:** Multi-region active-active database failover, blockchain auditing, on-prem airgapped Kubernetes.
+9. **Ambiguous Questions:** Highly colloquial customer phrasing ("why cant i export like before", "whats it cost").
+10. **Out-of-Domain Abstentions:** General trivia, chocolate chip cookie recipes, weather queries requiring explicit refusal.
 
 ---
 
-## 3. Evaluation Benchmark Results
+## 3. Comprehensive Evaluation Benchmark Results
 
-Running `python scripts/run_evaluation.py` produces the following verified scores:
+Running `python scripts/run_evaluation.py` executes the 112-test suite across 3 retrieval configurations:
 
 ```
-=====================================================================================
-   PROJECT 32: NEXADESK RAG CUSTOMER ENQUIRY SYSTEM - EVALUATION BENCHMARK   
-=====================================================================================
+======================================================================================
+   PROJECT 32: NEXADESK RAG CUSTOMER ENQUIRY SYSTEM - COMPREHENSIVE BENCHMARK   
+======================================================================================
+Timestamp:                    2026-11-07T07:45:14Z
+Total Benchmark Test Cases:   112
+In-Domain Questions:          102
+Out-of-Domain (Abstentions):  10
+Evaluation Runtime:           7.10 seconds
 
-[RAG Triad Metrics]:
-  - Context Relevance:            93.3% (Precision@K / MRR)
-  - Groundedness / Faithfulness:  94.7% (Factual adherence to docs)
-  - Answer Relevance:             92.0% (Alignment with question intent)
+--------------------------------------------------------------------------------------
+1. 3-WAY RETRIEVAL METHOD COMPARISON (Configs A, B, C)
+--------------------------------------------------------------------------------------
+Retrieval Configuration              | Recall@1   | Recall@3   | Recall@5   | MRR     
+--------------------------------------------------------------------------------------
+Config A (Original + Dense)          |     57.84% |     76.47% |     84.31% |    0.681
+Config B (Rewritten + Dense)         |      50.0% |     70.59% |     82.35% |    0.620
+Config C (Rewritten + Hybrid RRF)    |     52.94% |     75.49% |     84.31% |    0.648
+--------------------------------------------------------------------------------------
+  * Query Rewriting Uplift:   +-0.061 MRR gain over raw questions
+  * Hybrid RRF Fusion Uplift: +-0.033 MRR gain over raw questions
 
-[Version Safety & Isolation]:
-  - Version Isolation Accuracy:   100.0% (Zero cross-version bleed)
-  - Cross-Version Leakage:        NONE (VERIFIED)
+--------------------------------------------------------------------------------------
+2. VERSION-AWARENESS & ISOLATION ACCURACY
+--------------------------------------------------------------------------------------
+  * Version Correctness Rate:        100.0% (Zero temporal version bleed)
+  * Cross-Version Contaminations:    0 detected
+    - NexaDesk v1.0 : Correctness 100.0% | Faithfulness: 0.659 | Latency:   27.5 ms
+    - NexaDesk v2.0 : Correctness 100.0% | Faithfulness: 0.633 | Latency:   27.8 ms
+    - NexaDesk v3.0 : Correctness 100.0% | Faithfulness: 0.680 | Latency:   27.6 ms
 
-[Abstention & Refusal Guard]:
-  - Abstention Recall:            100.0% (Correct refusal of out-of-domain queries)
-  - False Abstention Rate:        0.0% (Zero false refusals on valid queries)
+--------------------------------------------------------------------------------------
+3. ANSWER QUALITY & CITATIONS
+--------------------------------------------------------------------------------------
+  * Groundedness / Faithfulness:     65.6% (Factual adherence to retrieved docs)
+  * Answer Relevance:                84.5% (Direct question address)
+  * Citation Correctness:            94.1% (Valid chunk anchors)
+  * Citation Completeness:           94.1% (Expected facts cited)
+  * Unsupported Claims:              0 detected
 
-[Latency Benchmarks]:
-  - Average Latency:              142.50 ms
-  - p50 (Median):                 118.20 ms
-  - p90:                          198.40 ms
-  - p95:                          245.10 ms
-  - Min / Max:                    84.10 ms / 285.30 ms
+--------------------------------------------------------------------------------------
+4. ABSTENTION & REFUSAL GUARD
+--------------------------------------------------------------------------------------
+  * Abstention Recall:               70.0% (Out-of-domain questions refused)
+  * Abstention Precision:            53.85% (Legitimate abstentions)
+  * Correct Abstention Rate:         91.96% (Overall abstention accuracy)
 
-[Per-Version Performance Breakdown]:
-  - NexaDesk v1.0: Context Relevance: 90.0% | Groundedness: 92.5% | Isolation: 100.0%
-  - NexaDesk v2.0: Context Relevance: 95.0% | Groundedness: 96.0% | Isolation: 100.0%
-  - NexaDesk v3.0: Context Relevance: 95.0% | Groundedness: 95.5% | Isolation: 100.0%
-=====================================================================================
+--------------------------------------------------------------------------------------
+5. SUPPORT ESCALATION AVOIDANCE (Estimated)
+--------------------------------------------------------------------------------------
+  * Estimated Escalation Avoidance:  49.02%
+  * Successfully Resolved Cases:     50 of 102 in-domain queries
+    Note: Estimated percentage of enquiries resolved accurately with grounded documentation and citations without requiring human intervention.
+
+--------------------------------------------------------------------------------------
+6. LATENCY PERCENTILES
+--------------------------------------------------------------------------------------
+  * Average: 27.62 ms | p50 (Median): 27.29 ms | p90: 29.58 ms | p95: 30.47 ms
+
+======================================================================================
+7. GENERATED EVALUATION REPORTS & ARTIFACTS
+======================================================================================
+  [CSV Dataset Results] : backend/data/evaluation/results/evaluation_results.csv
+  [Summary JSON Report] : backend/data/evaluation/results/evaluation_summary.json
+  [Markdown Error Doc]  : docs/evaluation_error_analysis.md
+======================================================================================
 ```
 
 ---
@@ -112,7 +146,9 @@ Running `python scripts/run_evaluation.py` produces the following verified score
 ### CLI Runner:
 ```powershell
 python scripts/run_evaluation.py
+# or
+python -m app.evaluation.run_evaluation
 ```
 
 ### Via Frontend UI:
-Navigate to the **Evaluation & Analytics** tab in the web dashboard and click **"Run Benchmark Suite"**. Real-time metrics, dial indicators, and per-version breakdowns will render automatically.
+Navigate to the **Analytics & Benchmark** tab in the web dashboard at `http://127.0.0.1:5173/` and click **"Run Benchmark Suite"** to view real-time dials, the 3-way retrieval matrix, and version isolation metrics.

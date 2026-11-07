@@ -1,146 +1,2267 @@
 [
   {
-    "id": "eval_001",
-    "query": "How do report exports work in NexaDesk?",
+    "id": "pf_v1_001",
+    "category": "product_features",
+    "question": "What core ticketing capabilities are included in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
     "product_version": "v1.0",
-    "expected_document": "reporting_and_exports.md",
-    "expected_section": "Manual Report Exports in v1.0",
-    "expected_keywords": ["manual", "csv", "export"],
-    "prohibited_keywords": ["scheduled", "recurring", "copilot", "sftp"],
-    "query_type": "version_differentiating",
-    "should_abstain": false
+    "expected_relevant_document": "ticket_management.md",
+    "expected_section": "Ticket Lifecycle",
+    "expected_key_facts": [
+      "email ingestion",
+      "manual assignment",
+      "status tracking",
+      "internal notes"
+    ],
+    "prohibited_keywords": [
+      "ai copilot",
+      "round-robin",
+      "nexaflow"
+    ],
+    "expected_answer": "NexaDesk v1.0 includes manual ticket creation, POP3/IMAP email ingestion, status tracking (Open, Pending, Resolved, Closed), priority levels, and internal agent notes.",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "What core ticketing capabilities are included in NexaDesk v1.0?"
   },
   {
-    "id": "eval_002",
-    "query": "Why can't I schedule my reports like before?",
+    "id": "pf_v1_002",
+    "category": "product_features",
+    "question": "What user roles are available in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
     "product_version": "v1.0",
-    "expected_document": "reporting_and_exports.md",
-    "expected_section": "Manual Report Exports in v1.0",
-    "expected_keywords": ["manual", "not supported", "csv"],
-    "prohibited_keywords": ["copilot", "ai autonomous"],
-    "query_type": "informal_complaint",
-    "should_abstain": false
-  },
-  {
-    "id": "eval_003",
-    "query": "How do report exports work in NexaDesk?",
-    "product_version": "v2.0",
-    "expected_document": "reporting_and_exports.md",
-    "expected_section": "Scheduled Report Exports in v2.0",
-    "expected_keywords": ["scheduled", "recurring", "email", "distribution"],
-    "prohibited_keywords": ["copilot", "anomaly"],
-    "query_type": "version_differentiating",
-    "should_abstain": false
-  },
-  {
-    "id": "eval_004",
-    "query": "Can I set up scheduled recurring reports?",
-    "product_version": "v2.0",
-    "expected_document": "reporting_and_exports.md",
-    "expected_section": "Scheduled Report Exports in v2.0",
-    "expected_keywords": ["scheduled", "daily", "weekly", "monthly", "pdf"],
-    "prohibited_keywords": ["copilot", "anomaly"],
-    "query_type": "feature_inquiry",
-    "should_abstain": false
-  },
-  {
-    "id": "eval_005",
-    "query": "How do report exports work in NexaDesk?",
-    "product_version": "v3.0",
-    "expected_document": "reporting_and_exports.md",
-    "expected_section": "Scheduled and Automated Report Exports in v3.0",
-    "expected_keywords": ["automated", "copilot", "slack", "sftp", "summary"],
-    "prohibited_keywords": [],
-    "query_type": "version_differentiating",
-    "should_abstain": false
-  },
-  {
-    "id": "eval_006",
-    "query": "What are the pricing tiers and monthly limits?",
-    "product_version": "v1.0",
-    "expected_document": "pricing_and_plans.md",
-    "expected_section": "Tier Overview",
-    "expected_keywords": ["free", "starter", "pro", "19", "49"],
-    "prohibited_keywords": ["growth", "scale", "copilot credits"],
-    "query_type": "pricing",
-    "should_abstain": false
-  },
-  {
-    "id": "eval_007",
-    "query": "How much does NexaDesk cost per user and is there an annual discount?",
-    "product_version": "v2.0",
-    "expected_document": "pricing_and_quotas.txt",
-    "expected_section": "NexaDesk v2.0 Pricing Tiers",
-    "expected_keywords": ["starter", "growth", "29", "79", "15%"],
-    "prohibited_keywords": ["scale tier", "copilot credits"],
-    "query_type": "pricing",
-    "should_abstain": false
-  },
-  {
-    "id": "eval_008",
-    "query": "What are the enterprise plans and AI copilot credit limits?",
-    "product_version": "v3.0",
-    "expected_document": "pricing_and_plans.md",
-    "expected_section": "Current Plans",
-    "expected_keywords": ["growth", "scale", "enterprise", "copilot credits", "20%"],
-    "prohibited_keywords": ["$19"],
-    "query_type": "pricing",
-    "should_abstain": false
-  },
-  {
-    "id": "eval_009",
-    "query": "How does round robin ticket assignment work?",
-    "product_version": "v2.0",
-    "expected_document": "rbac_and_round_robin.docx",
-    "expected_section": "Doc Ccee7C6Ea12D Rbac And Round Robin",
-    "expected_keywords": ["round-robin", "routing", "distribution", "agent"],
-    "prohibited_keywords": [],
-    "query_type": "technical_configuration",
-    "should_abstain": false
-  },
-  {
-    "id": "eval_010",
-    "query": "What user roles and permissions are supported?",
-    "product_version": "v1.0",
-    "expected_document": "user_roles_guide.docx",
+    "expected_relevant_document": "user_roles_guide.docx",
     "expected_section": "Standard Roles in v1.0",
-    "expected_keywords": ["administrator", "agent"],
-    "prohibited_keywords": ["custom roles", "sso", "nexaflow"],
-    "query_type": "security_and_roles",
-    "should_abstain": false
+    "expected_key_facts": [
+      "administrator",
+      "agent",
+      "viewer"
+    ],
+    "prohibited_keywords": [
+      "team lead",
+      "custom roles"
+    ],
+    "expected_answer": "NexaDesk v1.0 provides three standard roles: Administrator (full system configuration), Support Agent (manage and resolve tickets), and Viewer (read-only analytics access).",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "What user roles are available in NexaDesk v1.0?"
   },
   {
-    "id": "eval_011",
-    "query": "What are the First Response SLA targets and policy rules?",
+    "id": "pf_v1_003",
+    "category": "product_features",
+    "question": "What are the system requirements for deploying NexaDesk v1.0?",
+    "product_name": "NexaDesk",
     "product_version": "v1.0",
-    "expected_document": "email_and_sla_policy.pdf",
-    "expected_section": "Doc 16Da92764884 Email And Sla Policy",
-    "expected_keywords": ["sla", "urgent", "high", "hours"],
-    "prohibited_keywords": ["custom business hours per timezone"],
-    "query_type": "sla_and_policies",
-    "should_abstain": false
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "System Requirements",
+    "expected_key_facts": [
+      "web browser",
+      "chrome",
+      "firefox",
+      "edge",
+      "internet connection"
+    ],
+    "prohibited_keywords": [
+      "copilot",
+      "sso"
+    ],
+    "expected_answer": "NexaDesk v1.0 is a cloud-hosted web application accessible via modern web browsers including Google Chrome (v90+), Mozilla Firefox (v88+), and Microsoft Edge.",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "What are the system requirements for deploying NexaDesk v1.0?"
   },
   {
-    "id": "eval_012",
-    "query": "What is the authentic recipe for baking chocolate chip cookies?",
-    "product_version": "v3.0",
-    "expected_document": null,
-    "expected_section": null,
-    "expected_keywords": [],
-    "prohibited_keywords": [],
-    "query_type": "out_of_domain",
-    "should_abstain": true
-  },
-  {
-    "id": "eval_013",
-    "query": "How do I assemble an IKEA office desk with an allen wrench?",
+    "id": "pf_v2_001",
+    "category": "product_features",
+    "question": "What is the new round robin assignment feature in NexaDesk v2.0?",
+    "product_name": "NexaDesk",
     "product_version": "v2.0",
-    "expected_document": null,
-    "expected_section": null,
-    "expected_keywords": [],
+    "expected_relevant_document": "rbac_and_round_robin.docx",
+    "expected_section": "Automated Round-Robin Routing",
+    "expected_key_facts": [
+      "round-robin",
+      "automatic distribution",
+      "agent capacity",
+      "fair workload"
+    ],
+    "prohibited_keywords": [
+      "nexaflow studio",
+      "ai triage"
+    ],
+    "expected_answer": "NexaDesk v2.0 introduces automated round-robin routing that distributes incoming unassigned tickets evenly among active, logged-in agents according to capacity limits.",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "What is the new round robin assignment feature in NexaDesk v2.0?"
+  },
+  {
+    "id": "pf_v2_002",
+    "category": "product_features",
+    "question": "Does NexaDesk v2.0 have a Team Lead role?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "rbac_and_round_robin.docx",
+    "expected_section": "Enhanced RBAC Roles",
+    "expected_key_facts": [
+      "team lead",
+      "reassign tickets",
+      "view queue performance",
+      "manage agents"
+    ],
+    "prohibited_keywords": [
+      "saml sso",
+      "scim"
+    ],
+    "expected_answer": "Yes, NexaDesk v2.0 adds the Team Lead role, which allows supervising agent performance, reassigning tickets across groups, and configuring routing rules without full admin rights.",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "Does NexaDesk v2.0 have a Team Lead role?"
+  },
+  {
+    "id": "pf_v2_003",
+    "category": "product_features",
+    "question": "What automation triggers are available in NexaDesk v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "automations_and_routing.md",
+    "expected_section": "Automation Triggers",
+    "expected_key_facts": [
+      "time-based triggers",
+      "event triggers",
+      "ticket updated",
+      "ticket created"
+    ],
+    "prohibited_keywords": [
+      "nexaflow canvas",
+      "ai sentiment"
+    ],
+    "expected_answer": "NexaDesk v2.0 includes event-driven triggers (on ticket creation, ticket update, status change) and time-based triggers (e.g. idle ticket reminders after 24 hours).",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "What automation triggers are available in NexaDesk v2.0?"
+  },
+  {
+    "id": "pf_v3_001",
+    "category": "product_features",
+    "question": "What is the NexaDesk AI Copilot introduced in v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "ai_copilot_features.md",
+    "expected_section": "Features",
+    "expected_key_facts": [
+      "ai copilot",
+      "suggested responses",
+      "auto-summarization",
+      "sentiment analysis"
+    ],
+    "prohibited_keywords": [
+      "pop3 polling only"
+    ],
+    "expected_answer": "The NexaDesk AI Copilot in v3.0 assists support agents with automatic conversation summarization, draft reply suggestions, customer sentiment detection, and automated ticket tagging.",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "What is the NexaDesk AI Copilot introduced in v3.0?"
+  },
+  {
+    "id": "pf_v3_002",
+    "category": "product_features",
+    "question": "What is NexaFlow Studio in NexaDesk v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Innovations in v3.0",
+    "expected_key_facts": [
+      "nexaflow studio",
+      "visual workflow canvas",
+      "drag-and-drop",
+      "conditional branches"
+    ],
+    "prohibited_keywords": [
+      "manual assignment only"
+    ],
+    "expected_answer": "NexaFlow Studio in v3.0 is a visual no-code workflow canvas that allows administrators to design complex multi-step routing, approval chains, and external API webhooks.",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "What is NexaFlow Studio in NexaDesk v3.0?"
+  },
+  {
+    "id": "pf_v3_003",
+    "category": "product_features",
+    "question": "Does NexaDesk v3.0 support Enterprise Single Sign-On (SSO)?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "enterprise_ai_and_sso.pdf",
+    "expected_section": "Doc 70E14D5F5D5B Enterprise Ai And Sso",
+    "expected_key_facts": [
+      "saml 2.0",
+      "sso",
+      "okta",
+      "azure ad",
+      "scim provisioning"
+    ],
     "prohibited_keywords": [],
+    "expected_answer": "Yes, NexaDesk v3.0 provides Enterprise SAML 2.0 Single Sign-On compatible with identity providers like Okta, Azure AD, and Google Workspace, along with SCIM automated user provisioning.",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "Does NexaDesk v3.0 support Enterprise Single Sign-On (SSO)?"
+  },
+  {
+    "id": "pf_v3_004",
+    "category": "product_features",
+    "question": "How does customer data privacy work with AI Copilot in v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "ai_copilot_features.md",
+    "expected_section": "Privacy & Security",
+    "expected_key_facts": [
+      "zero data retention",
+      "pii redaction",
+      "no model training on customer data",
+      "enterprise encryption"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "AI Copilot in v3.0 operates with strict zero-data-retention for model training, performs automated PII masking on customer messages, and encrypts all inference payloads in transit and at rest.",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "How does customer data privacy work with AI Copilot in v3.0?"
+  },
+  {
+    "id": "pf_v1_004",
+    "category": "product_features",
+    "question": "Can I search tickets by keyword in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "ticket_management.md",
+    "expected_section": "Ticket Lifecycle",
+    "expected_key_facts": [
+      "search bar",
+      "ticket id",
+      "customer email",
+      "subject keyword"
+    ],
+    "prohibited_keywords": [
+      "semantic ai search"
+    ],
+    "expected_answer": "Yes, NexaDesk v1.0 includes basic search functionality allowing agents to look up tickets by Ticket ID, customer email address, or exact keyword matches in the subject line.",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "Can I search tickets by keyword in NexaDesk v1.0?"
+  },
+  {
+    "id": "pf_v2_004",
+    "category": "product_features",
+    "question": "What is the new SLA breach warning mechanism in v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "automations_and_routing.md",
+    "expected_section": "SLA Management",
+    "expected_key_facts": [
+      "breach warning",
+      "75% elapsed",
+      "visual amber indicator",
+      "manager alert"
+    ],
+    "prohibited_keywords": [
+      "ai prediction"
+    ],
+    "expected_answer": "In NexaDesk v2.0, an automated SLA warning triggers when 75% of the target response time has elapsed, displaying an amber indicator and notifying the assigned agent.",
+    "should_abstain": false,
+    "query_type": "product_features",
+    "query": "What is the new SLA breach warning mechanism in v2.0?"
+  },
+  {
+    "id": "ac_v1_001",
+    "category": "account_management",
+    "question": "What are the subscription pricing plans for NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "pricing_and_plans.md",
+    "expected_section": "Tier Overview",
+    "expected_key_facts": [
+      "starter plan",
+      "$19/month",
+      "growth plan",
+      "$49/month",
+      "ticket limits"
+    ],
+    "prohibited_keywords": [
+      "$29",
+      "$79",
+      "scale tier",
+      "annual discount 15%"
+    ],
+    "expected_answer": "NexaDesk v1.0 offers two pricing tiers: Starter Plan at $19/month (up to 500 tickets/month, 3 agent seats) and Growth Plan at $49/month (up to 2,500 tickets/month, 10 agent seats).",
+    "should_abstain": false,
+    "query_type": "pricing_and_plans",
+    "query": "What are the subscription pricing plans for NexaDesk v1.0?"
+  },
+  {
+    "id": "ac_v1_002",
+    "category": "account_management",
+    "question": "What happens if a v1.0 account exceeds its monthly ticket quota?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "pricing_and_plans.md",
+    "expected_section": "Tier Overview",
+    "expected_key_facts": [
+      "quota reached",
+      "upgrade plan",
+      "email notification",
+      "ticket creation paused"
+    ],
+    "prohibited_keywords": [
+      "auto-scaling overage"
+    ],
+    "expected_answer": "In NexaDesk v1.0, reaching monthly ticket quotas pauses new ticket creation from the web portal until the account is upgraded or the billing cycle resets.",
+    "should_abstain": false,
+    "query_type": "pricing_and_plans",
+    "query": "What happens if a v1.0 account exceeds its monthly ticket quota?"
+  },
+  {
+    "id": "ac_v2_001",
+    "category": "account_management",
+    "question": "What is the pricing for NexaDesk v2.0 and is there an annual discount?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "pricing_and_plans.md",
+    "expected_section": "Revised Tiers",
+    "expected_key_facts": [
+      "starter $29",
+      "pro $79",
+      "enterprise $199",
+      "15% discount for annual billing"
+    ],
+    "prohibited_keywords": [
+      "$19",
+      "scale tier $249"
+    ],
+    "expected_answer": "NexaDesk v2.0 plans include Starter ($29/mo, 1,000 tickets), Pro ($79/mo, 5,000 tickets), and Enterprise ($199/mo, unlimited). Customers opting for annual billing receive a 15% discount.",
+    "should_abstain": false,
+    "query_type": "pricing_and_plans",
+    "query": "What is the pricing for NexaDesk v2.0 and is there an annual discount?"
+  },
+  {
+    "id": "ac_v2_002",
+    "category": "account_management",
+    "question": "How many agent seats are included in the Pro tier of v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "pricing_and_quotas.txt",
+    "expected_section": "NexaDesk v2.0 Pricing Tiers",
+    "expected_key_facts": [
+      "pro tier",
+      "15 agent seats",
+      "5,000 tickets",
+      "$79"
+    ],
+    "prohibited_keywords": [
+      "unlimited agents in pro"
+    ],
+    "expected_answer": "In NexaDesk v2.0, the Pro tier at $79/month includes 15 agent seats and up to 5,000 tickets per month.",
+    "should_abstain": false,
+    "query_type": "pricing_and_plans",
+    "query": "How many agent seats are included in the Pro tier of v2.0?"
+  },
+  {
+    "id": "ac_v3_001",
+    "category": "account_management",
+    "question": "What are the pricing tiers available in NexaDesk v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "pricing_and_plans.md",
+    "expected_section": "Current Plans",
+    "expected_key_facts": [
+      "growth tier $99",
+      "scale tier $249",
+      "custom enterprise quote"
+    ],
+    "prohibited_keywords": [
+      "$19/month",
+      "$29/month"
+    ],
+    "expected_answer": "NexaDesk v3.0 provides Growth at $99/month (up to 5,000 tickets with AI Copilot), Scale at $249/month (up to 20,000 tickets with NexaFlow Studio), and Custom Enterprise with dedicated SLA.",
+    "should_abstain": false,
+    "query_type": "pricing_and_plans",
+    "query": "What are the pricing tiers available in NexaDesk v3.0?"
+  },
+  {
+    "id": "ac_v3_002",
+    "category": "account_management",
+    "question": "Is AI Copilot included in all v3.0 pricing tiers?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "pricing_and_quotas.txt",
+    "expected_section": "NexaDesk v3.0 Pricing Tiers",
+    "expected_key_facts": [
+      "growth tier includes standard copilot",
+      "scale tier includes full copilot",
+      "enterprise includes custom models"
+    ],
+    "prohibited_keywords": [
+      "not included in growth"
+    ],
+    "expected_answer": "In v3.0, AI Copilot standard features are included from the Growth tier upwards, with Scale and Enterprise offering advanced tuning and custom prompt templates.",
+    "should_abstain": false,
+    "query_type": "pricing_and_plans",
+    "query": "Is AI Copilot included in all v3.0 pricing tiers?"
+  },
+  {
+    "id": "ac_v1_003",
+    "category": "account_management",
+    "question": "How do I invite a new support agent in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "user_roles_guide.docx",
+    "expected_section": "Standard Roles in v1.0",
+    "expected_key_facts": [
+      "admin settings",
+      "team members",
+      "send invitation email",
+      "assign role"
+    ],
+    "prohibited_keywords": [
+      "scim provisioning"
+    ],
+    "expected_answer": "In v1.0, an Administrator navigates to Settings > Team Members, enters the agent's email address, selects either Agent or Viewer role, and sends the invitation link.",
+    "should_abstain": false,
+    "query_type": "account_management",
+    "query": "How do I invite a new support agent in NexaDesk v1.0?"
+  },
+  {
+    "id": "ac_v2_003",
+    "category": "account_management",
+    "question": "How can I upgrade my subscription plan in NexaDesk v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "pricing_and_plans.md",
+    "expected_section": "Revised Tiers",
+    "expected_key_facts": [
+      "admin billing tab",
+      "change subscription",
+      "prorated charge",
+      "instant activation"
+    ],
+    "prohibited_keywords": [
+      "contact sales for all upgrades"
+    ],
+    "expected_answer": "In v2.0, Administrators can upgrade between Starter and Pro directly from the Billing tab; upgrades apply immediately with prorated billing adjustments.",
+    "should_abstain": false,
+    "query_type": "account_management",
+    "query": "How can I upgrade my subscription plan in NexaDesk v2.0?"
+  },
+  {
+    "id": "ac_v3_003",
+    "category": "account_management",
+    "question": "How do I configure SAML SSO in NexaDesk v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "enterprise_ai_and_sso.pdf",
+    "expected_section": "Doc 70E14D5F5D5B Enterprise Ai And Sso",
+    "expected_key_facts": [
+      "enterprise security settings",
+      "idp metadata xml",
+      "assertion consumer url",
+      "x.509 certificate"
+    ],
+    "prohibited_keywords": [
+      "saml not supported"
+    ],
+    "expected_answer": "In v3.0, Administrators configure SAML under Enterprise Security by uploading the Identity Provider Metadata XML or entering the SSO URL, Entity ID, and X.509 public certificate.",
+    "should_abstain": false,
+    "query_type": "account_management",
+    "query": "How do I configure SAML SSO in NexaDesk v3.0?"
+  },
+  {
+    "id": "ac_v2_004",
+    "category": "account_management",
+    "question": "Can viewers export tickets in NexaDesk v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "rbac_and_round_robin.docx",
+    "expected_section": "Enhanced RBAC Roles",
+    "expected_key_facts": [
+      "viewer role read only",
+      "cannot export sensitive data",
+      "analytics read-only"
+    ],
+    "prohibited_keywords": [
+      "viewers have full admin export"
+    ],
+    "expected_answer": "In v2.0, the Viewer role is read-only. Viewers can inspect dashboard metrics and reports on screen but lack permissions to download or export raw customer ticket files.",
+    "should_abstain": false,
+    "query_type": "account_management",
+    "query": "Can viewers export tickets in NexaDesk v2.0?"
+  },
+  {
+    "id": "rep_v1_001",
+    "category": "report_generation",
+    "question": "How do report exports work in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Manual Report Exports in v1.0",
+    "expected_key_facts": [
+      "manual export",
+      "csv",
+      "pdf",
+      "analytics tab",
+      "scheduled exports are not supported"
+    ],
+    "prohibited_keywords": [
+      "automated cron",
+      "s3 scheduled export"
+    ],
+    "expected_answer": "In NexaDesk v1.0, report exports are performed manually in CSV or PDF format from the Admin Analytics tab. Automated and scheduled recurring exports are NOT supported in v1.0.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "How do report exports work in NexaDesk v1.0?"
+  },
+  {
+    "id": "rep_v1_002",
+    "category": "report_generation",
+    "question": "Can I automatically schedule reports to be emailed to management in v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Manual Report Exports in v1.0",
+    "expected_key_facts": [
+      "scheduled exports not supported",
+      "manual download only",
+      "v1.0 limitation"
+    ],
+    "prohibited_keywords": [
+      "yes you can schedule"
+    ],
+    "expected_answer": "No. NexaDesk v1.0 does not support scheduled recurring email exports. Administrators must manually generate and download reports from the Analytics dashboard.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "Can I automatically schedule reports to be emailed to management in v1.0?"
+  },
+  {
+    "id": "rep_v1_003",
+    "category": "report_generation",
+    "question": "What export file formats are supported in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Manual Report Exports in v1.0",
+    "expected_key_facts": [
+      "csv",
+      "pdf"
+    ],
+    "prohibited_keywords": [
+      "xlsx",
+      "google sheets direct connector"
+    ],
+    "expected_answer": "NexaDesk v1.0 supports manual exports in CSV (comma-separated values) and PDF summary formats.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "What export file formats are supported in NexaDesk v1.0?"
+  },
+  {
+    "id": "rep_v2_001",
+    "category": "report_generation",
+    "question": "How do scheduled report exports work in NexaDesk v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled Report Exports in v2.0",
+    "expected_key_facts": [
+      "scheduled recurring exports",
+      "daily",
+      "weekly",
+      "monthly",
+      "csv",
+      "pdf",
+      "excel",
+      "email delivery"
+    ],
+    "prohibited_keywords": [
+      "ai executive summary"
+    ],
+    "expected_answer": "NexaDesk v2.0 introduces scheduled recurring report exports. Administrators can schedule reports to be delivered daily, weekly, or monthly in CSV, PDF, or Excel format via email or webhook.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "How do scheduled report exports work in NexaDesk v2.0?"
+  },
+  {
+    "id": "rep_v2_002",
+    "category": "report_generation",
+    "question": "Can I export reports to Excel in NexaDesk v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled Report Exports in v2.0",
+    "expected_key_facts": [
+      "excel format",
+      "xlsx supported",
+      "scheduled and manual"
+    ],
+    "prohibited_keywords": [
+      "excel not supported"
+    ],
+    "expected_answer": "Yes, NexaDesk v2.0 added native support for Microsoft Excel (.xlsx) export formats alongside CSV and PDF.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "Can I export reports to Excel in NexaDesk v2.0?"
+  },
+  {
+    "id": "rep_v2_003",
+    "category": "report_generation",
+    "question": "What delivery destinations are supported for scheduled exports in v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled Report Exports in v2.0",
+    "expected_key_facts": [
+      "email recipients",
+      "secure webhook url",
+      "download link"
+    ],
+    "prohibited_keywords": [
+      "direct cloud databricks lakehouse"
+    ],
+    "expected_answer": "In v2.0, scheduled exports can be delivered directly to designated email addresses or posted to external endpoint systems via secure HTTPS Webhooks.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "What delivery destinations are supported for scheduled exports in v2.0?"
+  },
+  {
+    "id": "rep_v3_001",
+    "category": "report_generation",
+    "question": "How do automated report exports work in NexaDesk v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled and Automated Report Exports in v3.0",
+    "expected_key_facts": [
+      "automated report exports",
+      "ai executive summaries",
+      "scheduled delivery",
+      "anomaly detection"
+    ],
+    "prohibited_keywords": [
+      "manual csv only"
+    ],
+    "expected_answer": "NexaDesk v3.0 enhances scheduled exports with AI-generated executive summaries, anomaly detection alerts on ticket spikes, and automated distribution across email, Slack, and cloud storage.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "How do automated report exports work in NexaDesk v3.0?"
+  },
+  {
+    "id": "rep_v3_002",
+    "category": "report_generation",
+    "question": "What are AI Executive Summaries in v3.0 report exports?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled and Automated Report Exports in v3.0",
+    "expected_key_facts": [
+      "natural language summary",
+      "key trends",
+      "sla performance narrative",
+      "top recurring customer issues"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v3.0, report exports include an optional natural language AI Executive Summary highlighting week-over-week trends, SLA breaches, and top customer friction points.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "What are AI Executive Summaries in v3.0 report exports?"
+  },
+  {
+    "id": "rep_v3_003",
+    "category": "report_generation",
+    "question": "Can reports be scheduled automatically through NexaFlow Studio in v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled and Automated Report Exports in v3.0",
+    "expected_key_facts": [
+      "nexaflow studio integration",
+      "trigger-based report generation",
+      "automated pipeline"
+    ],
+    "prohibited_keywords": [
+      "nexaflow cannot generate reports"
+    ],
+    "expected_answer": "Yes, in v3.0, report generation and dispatch can be triggered directly as actions within NexaFlow Studio workflow nodes based on schedule or performance thresholds.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "Can reports be scheduled automatically through NexaFlow Studio in v3.0?"
+  },
+  {
+    "id": "rep_v1_004",
+    "category": "report_generation",
+    "question": "Where is the report export button located in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Manual Report Exports in v1.0",
+    "expected_key_facts": [
+      "admin analytics tab",
+      "export button",
+      "top right corner"
+    ],
+    "prohibited_keywords": [
+      "nexaflow canvas"
+    ],
+    "expected_answer": "In NexaDesk v1.0, navigate to the Admin Dashboard > Analytics tab; the 'Export Report' button is located in the upper right corner of the overview panel.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "Where is the report export button located in NexaDesk v1.0?"
+  },
+  {
+    "id": "rep_v2_004",
+    "category": "report_generation",
+    "question": "Can I pause an active scheduled report in NexaDesk v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled Report Exports in v2.0",
+    "expected_key_facts": [
+      "schedule manager",
+      "toggle active status",
+      "pause without deleting"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Yes, in v2.0, administrators can pause any recurring scheduled export using the status toggle in Analytics > Scheduled Reports without having to delete the schedule definition.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "Can I pause an active scheduled report in NexaDesk v2.0?"
+  },
+  {
+    "id": "rep_v3_004",
+    "category": "report_generation",
+    "question": "Does NexaDesk v3.0 support real-time streaming report exports?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "enterprise_ai_and_sso.pdf",
+    "expected_section": "Doc 70E14D5F5D5B Enterprise Ai And Sso",
+    "expected_key_facts": [
+      "audit log streaming",
+      "real-time events",
+      "webhook destination",
+      "siem integration"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v3.0 Enterprise, real-time audit log and ticket activity streaming is supported for integration with SIEM providers, security log lakes, and analytics warehouses.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "Does NexaDesk v3.0 support real-time streaming report exports?"
+  },
+  {
+    "id": "rep_v1_005",
+    "category": "report_generation",
+    "question": "Can I filter manual reports by date range in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Manual Report Exports in v1.0",
+    "expected_key_facts": [
+      "date range picker",
+      "start date",
+      "end date",
+      "filter data"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Yes, in v1.0, administrators can select custom start and end dates from the date range selector prior to clicking Export Report.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "Can I filter manual reports by date range in NexaDesk v1.0?"
+  },
+  {
+    "id": "rep_v2_005",
+    "category": "report_generation",
+    "question": "What metrics are included in the v2.0 scheduled summary report?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled Report Exports in v2.0",
+    "expected_key_facts": [
+      "total tickets created",
+      "average first response time",
+      "sla resolution rate",
+      "agent resolution counts"
+    ],
+    "prohibited_keywords": [
+      "ai sentiment trend analysis"
+    ],
+    "expected_answer": "The v2.0 scheduled report contains ticket volume totals, first response time averages, SLA compliance percentages, and individual agent resolution statistics.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "What metrics are included in the v2.0 scheduled summary report?"
+  },
+  {
+    "id": "rep_v3_005",
+    "category": "report_generation",
+    "question": "Can report exports be delivered directly to Slack channels in v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled and Automated Report Exports in v3.0",
+    "expected_key_facts": [
+      "slack delivery",
+      "channel webhook",
+      "ai summary preview",
+      "download link"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Yes, NexaDesk v3.0 allows configuring scheduled reports to post directly to designated Slack channels with an interactive AI summary preview card.",
+    "should_abstain": false,
+    "query_type": "report_generation",
+    "query": "Can report exports be delivered directly to Slack channels in v3.0?"
+  },
+  {
+    "id": "tb_v1_001",
+    "category": "troubleshooting",
+    "question": "Why are my support emails taking 15 minutes to show up as tickets in v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "email_and_sla_policy.pdf",
+    "expected_section": "Doc 16Da92764884 Email And Sla Policy",
+    "expected_key_facts": [
+      "pop3 polling interval",
+      "15 minute cron cycle",
+      "normal behavior for v1.0"
+    ],
+    "prohibited_keywords": [
+      "instant webhook sync"
+    ],
+    "expected_answer": "In NexaDesk v1.0, email ingestion relies on POP3/IMAP polling scheduled on a 15-minute cron cycle. This delay is expected behavior in v1.0.",
+    "should_abstain": false,
+    "query_type": "troubleshooting",
+    "query": "Why are my support emails taking 15 minutes to show up as tickets in v1.0?"
+  },
+  {
+    "id": "tb_v1_002",
+    "category": "troubleshooting",
+    "question": "What should I do if an agent cannot log in to NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "user_roles_guide.docx",
+    "expected_section": "Standard Roles in v1.0",
+    "expected_key_facts": [
+      "verify credentials",
+      "admin password reset",
+      "check active account status"
+    ],
+    "prohibited_keywords": [
+      "sso idp connection"
+    ],
+    "expected_answer": "For v1.0 login issues, ensure the user account is marked active and verify the email address. An administrator can trigger a password reset link from Settings > Team Members.",
+    "should_abstain": false,
+    "query_type": "troubleshooting",
+    "query": "What should I do if an agent cannot log in to NexaDesk v1.0?"
+  },
+  {
+    "id": "tb_v2_001",
+    "category": "troubleshooting",
+    "question": "Why is an agent not receiving round-robin ticket assignments in v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "rbac_and_round_robin.docx",
+    "expected_section": "Automated Round-Robin Routing",
+    "expected_key_facts": [
+      "agent status must be active/online",
+      "maximum ticket capacity limit",
+      "check queue assignment"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v2.0, round-robin skips agents who are toggled to 'Offline', have reached their maximum open ticket capacity threshold, or are not members of the assigned routing queue.",
+    "should_abstain": false,
+    "query_type": "troubleshooting",
+    "query": "Why is an agent not receiving round-robin ticket assignments in v2.0?"
+  },
+  {
+    "id": "tb_v2_002",
+    "category": "troubleshooting",
+    "question": "How do I fix a failed webhook notification in NexaDesk v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "omnichannel_and_webhooks.pdf",
+    "expected_section": "Doc Ccee7C6Ea12D Rbac And Round Robin",
+    "expected_key_facts": [
+      "webhook delivery logs",
+      "http response code",
+      "retry policy",
+      "verify endpoint ssl certificate"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v2.0, check Settings > Webhooks > Delivery Logs for the HTTP status code (e.g. 500, 404). NexaDesk automatically retries failed deliveries 3 times with exponential backoff.",
+    "should_abstain": false,
+    "query_type": "troubleshooting",
+    "query": "How do I fix a failed webhook notification in NexaDesk v2.0?"
+  },
+  {
+    "id": "tb_v3_001",
+    "category": "troubleshooting",
+    "question": "Why is AI Copilot not generating reply suggestions in v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "ai_copilot_features.md",
+    "expected_section": "Features",
+    "expected_key_facts": [
+      "minimum conversation length required",
+      "verify copilot toggle enabled in settings",
+      "check language support"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "AI Copilot requires at least one inbound customer message with sufficient text context. Verify that AI Copilot is toggled ON under Admin Settings > AI Preferences.",
+    "should_abstain": false,
+    "query_type": "troubleshooting",
+    "query": "Why is AI Copilot not generating reply suggestions in v3.0?"
+  },
+  {
+    "id": "tb_v3_002",
+    "category": "troubleshooting",
+    "question": "What causes SAML SSO login errors in NexaDesk v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "enterprise_ai_and_sso.pdf",
+    "expected_section": "Doc 70E14D5F5D5B Enterprise Ai And Sso",
+    "expected_key_facts": [
+      "expired x.509 certificate",
+      "clock skew discrepancy",
+      "mismatched entity id",
+      "email nameid mapping"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Common causes of SAML SSO failures include expired X.509 signing certificates, clock skew between IdP and NexaDesk servers (>5 minutes), or an unmapped NameID email attribute.",
+    "should_abstain": false,
+    "query_type": "troubleshooting",
+    "query": "What causes SAML SSO login errors in NexaDesk v3.0?"
+  },
+  {
+    "id": "tb_v1_003",
+    "category": "troubleshooting",
+    "question": "Why did my manual PDF export fail in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Manual Report Exports in v1.0",
+    "expected_key_facts": [
+      "date range too wide",
+      "max 10,000 records per export",
+      "narrow time window"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v1.0, manual PDF exports are limited to 10,000 records per batch. Select a narrower date range if the export times out or fails.",
+    "should_abstain": false,
+    "query_type": "troubleshooting",
+    "query": "Why did my manual PDF export fail in NexaDesk v1.0?"
+  },
+  {
+    "id": "tb_v2_003",
+    "category": "troubleshooting",
+    "question": "Why didn't an SLA warning trigger for a ticket in v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "automations_and_routing.md",
+    "expected_section": "SLA Management",
+    "expected_key_facts": [
+      "business hours calculation",
+      "ticket status paused",
+      "first response already sent"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v2.0, SLA clocks only advance during defined business hours and pause when tickets enter 'Pending Customer' status, which prevents warning triggers outside work shifts.",
+    "should_abstain": false,
+    "query_type": "troubleshooting",
+    "query": "Why didn't an SLA warning trigger for a ticket in v2.0?"
+  },
+  {
+    "id": "tb_v3_003",
+    "category": "troubleshooting",
+    "question": "What should I do if a NexaFlow workflow node shows an error in v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Innovations in v3.0",
+    "expected_key_facts": [
+      "inspect node execution logs",
+      "check required variable inputs",
+      "verify downstream connection"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Open NexaFlow Studio, click on the flagged node, and open 'Execution Logs' to inspect error codes, missing payload variables, or failed external HTTP webhooks.",
+    "should_abstain": false,
+    "query_type": "troubleshooting",
+    "query": "What should I do if a NexaFlow workflow node shows an error in v3.0?"
+  },
+  {
+    "id": "tb_v2_004",
+    "category": "troubleshooting",
+    "question": "Why is Slack not receiving ticket creation alerts in v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "omnichannel_and_webhooks.pdf",
+    "expected_section": "Doc Ccee7C6Ea12D Rbac And Round Robin",
+    "expected_key_facts": [
+      "slack incoming webhook url invalid",
+      "target channel archived",
+      "event trigger not enabled"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Verify that the Slack Incoming Webhook URL is valid and active, ensure the destination channel exists and has permissions, and confirm 'On Ticket Created' is toggled in Settings.",
+    "should_abstain": false,
+    "query_type": "troubleshooting",
+    "query": "Why is Slack not receiving ticket creation alerts in v2.0?"
+  },
+  {
+    "id": "notif_v1_001",
+    "category": "notifications",
+    "question": "How are customer email notifications sent in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "email_and_sla_policy.pdf",
+    "expected_section": "Doc 16Da92764884 Email And Sla Policy",
+    "expected_key_facts": [
+      "smtp outbound server",
+      "ticket creation auto-reply",
+      "agent response notification"
+    ],
+    "prohibited_keywords": [
+      "slack webhooks in v1"
+    ],
+    "expected_answer": "NexaDesk v1.0 sends automated email notifications through configured outbound SMTP when a ticket is created or when an agent publishes a public response.",
+    "should_abstain": false,
+    "query_type": "notifications",
+    "query": "How are customer email notifications sent in NexaDesk v1.0?"
+  },
+  {
+    "id": "notif_v2_001",
+    "category": "notifications",
+    "question": "Can NexaDesk v2.0 send notifications to Slack channels?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "omnichannel_and_webhooks.pdf",
+    "expected_section": "Doc Ccee7C6Ea12D Rbac And Round Robin",
+    "expected_key_facts": [
+      "slack incoming webhooks",
+      "channel notifications",
+      "urgent ticket alerts"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Yes, NexaDesk v2.0 includes native Slack webhook integration to broadcast ticket creation, priority escalation, and SLA warning notifications to chosen Slack channels.",
+    "should_abstain": false,
+    "query_type": "notifications",
+    "query": "Can NexaDesk v2.0 send notifications to Slack channels?"
+  },
+  {
+    "id": "notif_v2_002",
+    "category": "notifications",
+    "question": "Can I configure Microsoft Teams webhook notifications in v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "omnichannel_and_webhooks.pdf",
+    "expected_section": "Doc Ccee7C6Ea12D Rbac And Round Robin",
+    "expected_key_facts": [
+      "ms teams connector",
+      "incoming webhook url",
+      "formatted card payload"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Yes, NexaDesk v2.0 supports Microsoft Teams incoming webhook connectors to dispatch ticket alert cards into Microsoft Teams channels.",
+    "should_abstain": false,
+    "query_type": "notifications",
+    "query": "Can I configure Microsoft Teams webhook notifications in v2.0?"
+  },
+  {
+    "id": "notif_v3_001",
+    "category": "notifications",
+    "question": "How are notifications dispatched in NexaDesk v3.0 with NexaFlow?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Innovations in v3.0",
+    "expected_key_facts": [
+      "nexaflow notification nodes",
+      "omnichannel dispatch",
+      "sms email slack webhook"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v3.0, notifications are orchestrated via NexaFlow Studio blocks, enabling conditional dispatch to Email, SMS, Slack, Teams, or custom enterprise webhooks simultaneously.",
+    "should_abstain": false,
+    "query_type": "notifications",
+    "query": "How are notifications dispatched in NexaDesk v3.0 with NexaFlow?"
+  },
+  {
+    "id": "notif_v1_002",
+    "category": "notifications",
+    "question": "Can agents customize their own personal notification settings in v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "user_roles_guide.docx",
+    "expected_section": "Standard Roles in v1.0",
+    "expected_key_facts": [
+      "personal profile",
+      "email on ticket assignment",
+      "email on customer reply"
+    ],
+    "prohibited_keywords": [
+      "mobile push notifications in v1"
+    ],
+    "expected_answer": "In v1.0, individual agents can manage their email notification preferences under Profile Settings, choosing whether to receive emails when tickets are assigned to them.",
+    "should_abstain": false,
+    "query_type": "notifications",
+    "query": "Can agents customize their own personal notification settings in v1.0?"
+  },
+  {
+    "id": "notif_v2_003",
+    "category": "notifications",
+    "question": "What payload format is sent by NexaDesk v2.0 webhooks?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "omnichannel_and_webhooks.pdf",
+    "expected_section": "Doc Ccee7C6Ea12D Rbac And Round Robin",
+    "expected_key_facts": [
+      "json payload",
+      "event name",
+      "ticket object",
+      "timestamp",
+      "signature header"
+    ],
+    "prohibited_keywords": [
+      "xml only"
+    ],
+    "expected_answer": "NexaDesk v2.0 webhooks deliver UTF-8 JSON payloads containing the event identifier, ticket metadata, customer info, and an HMAC-SHA256 signature header for verification.",
+    "should_abstain": false,
+    "query_type": "notifications",
+    "query": "What payload format is sent by NexaDesk v2.0 webhooks?"
+  },
+  {
+    "id": "notif_v3_002",
+    "category": "notifications",
+    "question": "Can AI Copilot generate proactive notification summaries in v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "ai_copilot_features.md",
+    "expected_section": "Features",
+    "expected_key_facts": [
+      "proactive daily digest",
+      "ai summarized ticket highlights",
+      "manager alert"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Yes, in v3.0, AI Copilot can generate daily briefing digests summarizing high-priority open escalations and customer sentiment trends for support managers.",
+    "should_abstain": false,
+    "query_type": "notifications",
+    "query": "Can AI Copilot generate proactive notification summaries in v3.0?"
+  },
+  {
+    "id": "notif_v1_003",
+    "category": "notifications",
+    "question": "Does NexaDesk v1.0 support SMS notifications?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Features",
+    "expected_key_facts": [
+      "email notifications only",
+      "sms not supported in v1.0"
+    ],
+    "prohibited_keywords": [
+      "twilio sms supported in v1"
+    ],
+    "expected_answer": "No. NexaDesk v1.0 only supports email notifications via SMTP. SMS text alerts are not available in v1.0.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "Does NexaDesk v1.0 support SMS notifications?"
+  },
+  {
+    "id": "notif_v2_004",
+    "category": "notifications",
+    "question": "Can we filter webhook events to only fire on ticket closure in v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "automations_and_routing.md",
+    "expected_section": "Automation Triggers",
+    "expected_key_facts": [
+      "event filter",
+      "ticket_closed event",
+      "custom webhook rule"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Yes, v2.0 allows administrators to configure webhooks to subscribe selectively to specific event topics, including 'ticket.closed' and 'ticket.resolved'.",
+    "should_abstain": false,
+    "query_type": "notifications",
+    "query": "Can we filter webhook events to only fire on ticket closure in v2.0?"
+  },
+  {
+    "id": "notif_v3_003",
+    "category": "notifications",
+    "question": "Can notification webhooks in v3.0 pass through enterprise proxy tunnels?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "enterprise_ai_and_sso.pdf",
+    "expected_section": "Doc 70E14D5F5D5B Enterprise Ai And Sso",
+    "expected_key_facts": [
+      "enterprise egress ip whitelisting",
+      "mtls authentication",
+      "proxy tunnel"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Yes, NexaDesk v3.0 Enterprise supports static egress IP whitelisting and mutual TLS (mTLS) client certificates for webhook traffic destined for on-premise proxy gateways.",
+    "should_abstain": false,
+    "query_type": "notifications",
+    "query": "Can notification webhooks in v3.0 pass through enterprise proxy tunnels?"
+  },
+  {
+    "id": "cm_v1_001",
+    "category": "customer_management",
+    "question": "What ticket priority levels exist in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "ticket_management.md",
+    "expected_section": "Ticket Lifecycle",
+    "expected_key_facts": [
+      "low",
+      "medium",
+      "high",
+      "urgent"
+    ],
+    "prohibited_keywords": [
+      "custom dynamic priority"
+    ],
+    "expected_answer": "NexaDesk v1.0 supports four standard ticket priority levels: Low, Medium, High, and Urgent.",
+    "should_abstain": false,
+    "query_type": "customer_management",
+    "query": "What ticket priority levels exist in NexaDesk v1.0?"
+  },
+  {
+    "id": "cm_v1_002",
+    "category": "customer_management",
+    "question": "Can agents write private internal notes on tickets in v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "ticket_management.md",
+    "expected_section": "Ticket Lifecycle",
+    "expected_key_facts": [
+      "internal notes",
+      "hidden from customer",
+      "yellow background",
+      "agent collaboration"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Yes, agents in v1.0 can post private Internal Notes visible only to other authenticated agents and administrators, marked with a distinctive yellow border.",
+    "should_abstain": false,
+    "query_type": "customer_management",
+    "query": "Can agents write private internal notes on tickets in v1.0?"
+  },
+  {
+    "id": "cm_v2_001",
+    "category": "customer_management",
+    "question": "How are customer tickets assigned to groups in NexaDesk v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "rbac_and_round_robin.docx",
+    "expected_section": "Automated Round-Robin Routing",
+    "expected_key_facts": [
+      "support groups",
+      "tier 1 support",
+      "billing group",
+      "technical support",
+      "automatic assignment"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v2.0, tickets can be categorized into functional Support Groups (e.g. Technical Support, Billing, Tier 1) and distributed to group members via round-robin rules.",
+    "should_abstain": false,
+    "query_type": "customer_management",
+    "query": "How are customer tickets assigned to groups in NexaDesk v2.0?"
+  },
+  {
+    "id": "cm_v2_002",
+    "category": "customer_management",
+    "question": "What is the First Response SLA target for urgent tickets in v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "automations_and_routing.md",
+    "expected_section": "SLA Management",
+    "expected_key_facts": [
+      "urgent priority",
+      "1 hour first response target",
+      "business hours"
+    ],
+    "prohibited_keywords": [
+      "8 hours for urgent in v2"
+    ],
+    "expected_answer": "In NexaDesk v2.0, the default SLA policy mandates a 1-hour first response time target for Urgent priority tickets during operating hours.",
+    "should_abstain": false,
+    "query_type": "customer_management",
+    "query": "What is the First Response SLA target for urgent tickets in v2.0?"
+  },
+  {
+    "id": "cm_v3_001",
+    "category": "customer_management",
+    "question": "How does AI Copilot assist with customer sentiment analysis in v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "ai_copilot_features.md",
+    "expected_section": "Features",
+    "expected_key_facts": [
+      "sentiment scoring",
+      "positive neutral negative",
+      "frustration detection",
+      "priority escalation"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v3.0, AI Copilot evaluates customer message tone, flags frustrated or angry language, and can trigger automated escalation to senior agents.",
+    "should_abstain": false,
+    "query_type": "customer_management",
+    "query": "How does AI Copilot assist with customer sentiment analysis in v3.0?"
+  },
+  {
+    "id": "cm_v3_002",
+    "category": "customer_management",
+    "question": "Can NexaDesk v3.0 merge duplicate tickets from the same customer?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Innovations in v3.0",
+    "expected_key_facts": [
+      "ticket merging",
+      "ai duplicate detection",
+      "unified conversation thread"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "Yes, NexaDesk v3.0 features intelligent ticket merging where duplicate submissions are automatically flagged and can be consolidated into a single active thread.",
+    "should_abstain": false,
+    "query_type": "customer_management",
+    "query": "Can NexaDesk v3.0 merge duplicate tickets from the same customer?"
+  },
+  {
+    "id": "cm_v1_003",
+    "category": "customer_management",
+    "question": "Can agents reassign tickets between themselves in v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "ticket_management.md",
+    "expected_section": "Ticket Lifecycle",
+    "expected_key_facts": [
+      "manual reassignment",
+      "assignee dropdown",
+      "agent permissions"
+    ],
+    "prohibited_keywords": [
+      "team lead required in v1"
+    ],
+    "expected_answer": "Yes, any agent with write access in v1.0 can reassign an open ticket to another colleague using the Assignee dropdown selector.",
+    "should_abstain": false,
+    "query_type": "customer_management",
+    "query": "Can agents reassign tickets between themselves in v1.0?"
+  },
+  {
+    "id": "cm_v2_003",
+    "category": "customer_management",
+    "question": "Can customers see internal notes in NexaDesk v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "rbac_and_round_robin.docx",
+    "expected_section": "Enhanced RBAC Roles",
+    "expected_key_facts": [
+      "internal notes strictly private",
+      "hidden from end user portal"
+    ],
+    "prohibited_keywords": [
+      "visible to customers"
+    ],
+    "expected_answer": "No. In v2.0, internal notes remain strictly confidential to authenticated internal staff and are never rendered on the customer-facing ticket view.",
+    "should_abstain": false,
+    "query_type": "customer_management",
+    "query": "Can customers see internal notes in NexaDesk v2.0?"
+  },
+  {
+    "id": "cm_v3_003",
+    "category": "customer_management",
+    "question": "How does automatic language translation work in v3.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "ai_copilot_features.md",
+    "expected_section": "Features",
+    "expected_key_facts": [
+      "real-time translation",
+      "over 40 languages",
+      "bidirectional translation for agent and customer"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "AI Copilot in v3.0 translates inbound customer tickets in over 40 languages into the agent's preferred language, and translates outbound replies back into the customer's native language.",
+    "should_abstain": false,
+    "query_type": "customer_management",
+    "query": "How does automatic language translation work in v3.0?"
+  },
+  {
+    "id": "cm_v1_004",
+    "category": "customer_management",
+    "question": "What is the default First Response SLA in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "email_and_sla_policy.pdf",
+    "expected_section": "Doc 16Da92764884 Email And Sla Policy",
+    "expected_key_facts": [
+      "8 hours default first response",
+      "next business day for low priority"
+    ],
+    "prohibited_keywords": [
+      "15 minute urgent sla in v1"
+    ],
+    "expected_answer": "In NexaDesk v1.0, the baseline First Response SLA is 8 business hours for standard tickets and 24 hours for Low priority items.",
+    "should_abstain": false,
+    "query_type": "customer_management",
+    "query": "What is the default First Response SLA in NexaDesk v1.0?"
+  },
+  {
+    "id": "vd_sched_v1",
+    "category": "version_specific",
+    "question": "Can I schedule reports?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Manual Report Exports in v1.0",
+    "expected_key_facts": [
+      "not supported in v1.0",
+      "manual export only"
+    ],
+    "prohibited_keywords": [
+      "yes you can schedule"
+    ],
+    "expected_answer": "In NexaDesk v1.0, scheduled report exports are unavailable. Reports must be exported manually via CSV or PDF.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "Can I schedule reports?"
+  },
+  {
+    "id": "vd_sched_v2",
+    "category": "version_specific",
+    "question": "Can I schedule reports?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled Report Exports in v2.0",
+    "expected_key_facts": [
+      "scheduled report exports are supported",
+      "daily weekly monthly",
+      "email delivery"
+    ],
+    "prohibited_keywords": [
+      "scheduling is unavailable",
+      "ai executive summary"
+    ],
+    "expected_answer": "Yes, in NexaDesk v2.0, you can schedule reports to be automatically generated and sent via email or webhook daily, weekly, or monthly.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "Can I schedule reports?"
+  },
+  {
+    "id": "vd_sched_v3",
+    "category": "version_specific",
+    "question": "Can I schedule reports?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled and Automated Report Exports in v3.0",
+    "expected_key_facts": [
+      "scheduled and automated report exports",
+      "ai executive summaries",
+      "multichannel delivery"
+    ],
+    "prohibited_keywords": [
+      "scheduling is unavailable",
+      "csv manual only"
+    ],
+    "expected_answer": "Yes, NexaDesk v3.0 supports both scheduled and automated trigger-based report exports, augmented with AI executive summaries and multichannel delivery.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "Can I schedule reports?"
+  },
+  {
+    "id": "vd_price_v1",
+    "category": "version_specific",
+    "question": "What is the starter plan price?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "pricing_and_plans.md",
+    "expected_section": "Tier Overview",
+    "expected_key_facts": [
+      "$19",
+      "starter plan",
+      "500 tickets"
+    ],
+    "prohibited_keywords": [
+      "$29",
+      "$99"
+    ],
+    "expected_answer": "In NexaDesk v1.0, the Starter plan is $19/month and includes up to 500 tickets per month for 3 agent seats.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "What is the starter plan price?"
+  },
+  {
+    "id": "vd_price_v2",
+    "category": "version_specific",
+    "question": "What is the starter plan price?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "pricing_and_plans.md",
+    "expected_section": "Revised Tiers",
+    "expected_key_facts": [
+      "$29",
+      "starter plan",
+      "1,000 tickets"
+    ],
+    "prohibited_keywords": [
+      "$19",
+      "$99"
+    ],
+    "expected_answer": "In NexaDesk v2.0, the Starter plan is $29/month and includes up to 1,000 tickets per month for 5 agent seats.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "What is the starter plan price?"
+  },
+  {
+    "id": "vd_price_v3",
+    "category": "version_specific",
+    "question": "What is the starter plan price?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "pricing_and_plans.md",
+    "expected_section": "Current Plans",
+    "expected_key_facts": [
+      "starter plan replaced by growth",
+      "growth plan $99",
+      "no starter tier in v3"
+    ],
+    "prohibited_keywords": [
+      "starter plan is $19"
+    ],
+    "expected_answer": "In NexaDesk v3.0, the entry-level tier is the Growth plan at $99/month (replacing legacy Starter tiers) and includes AI Copilot and 5,000 tickets/month.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "What is the starter plan price?"
+  },
+  {
+    "id": "vd_route_v1",
+    "category": "version_specific",
+    "question": "How are tickets assigned to agents?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "ticket_management.md",
+    "expected_section": "Limitations in v1.0",
+    "expected_key_facts": [
+      "manual assignment only",
+      "no automated routing in v1.0"
+    ],
+    "prohibited_keywords": [
+      "round robin",
+      "nexaflow"
+    ],
+    "expected_answer": "In NexaDesk v1.0, tickets must be manually assigned by an administrator or agent; automated routing is not supported.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "How are tickets assigned to agents?"
+  },
+  {
+    "id": "vd_route_v2",
+    "category": "version_specific",
+    "question": "How are tickets assigned to agents?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "rbac_and_round_robin.docx",
+    "expected_section": "Automated Round-Robin Routing",
+    "expected_key_facts": [
+      "round-robin automated routing",
+      "agent capacity",
+      "group distribution"
+    ],
+    "prohibited_keywords": [
+      "manual assignment only",
+      "nexaflow studio visual canvas"
+    ],
+    "expected_answer": "In NexaDesk v2.0, tickets are assigned automatically using rule-based round-robin distribution based on agent availability and group membership.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "How are tickets assigned to agents?"
+  },
+  {
+    "id": "vd_route_v3",
+    "category": "version_specific",
+    "question": "How are tickets assigned to agents?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Innovations in v3.0",
+    "expected_key_facts": [
+      "nexaflow studio",
+      "ai triage",
+      "dynamic conditional routing",
+      "skill-based matching"
+    ],
+    "prohibited_keywords": [
+      "manual assignment only in v3"
+    ],
+    "expected_answer": "In NexaDesk v3.0, ticket assignment is powered by NexaFlow Studio and AI Copilot, using customer sentiment, category detection, and agent skill-based routing.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "How are tickets assigned to agents?"
+  },
+  {
+    "id": "vd_ai_v1",
+    "category": "version_specific",
+    "question": "Does NexaDesk offer AI smart reply features?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Features",
+    "expected_key_facts": [
+      "ai features not supported in v1.0",
+      "manual agent typing"
+    ],
+    "prohibited_keywords": [
+      "ai copilot is active"
+    ],
+    "expected_answer": "No. NexaDesk v1.0 does not include any AI-powered reply or smart assistance features.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "Does NexaDesk offer AI smart reply features?"
+  },
+  {
+    "id": "vd_ai_v2",
+    "category": "version_specific",
+    "question": "Does NexaDesk offer AI smart reply features?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "What's New in v2.0",
+    "expected_key_facts": [
+      "ai smart reply not available in v2.0",
+      "rule-based automations only"
+    ],
+    "prohibited_keywords": [
+      "ai copilot is active in v2"
+    ],
+    "expected_answer": "No. NexaDesk v2.0 focuses on rule-based automations, round-robin, and scheduled reports. Generative AI smart replies are not introduced until v3.0.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "Does NexaDesk offer AI smart reply features?"
+  },
+  {
+    "id": "vd_ai_v3",
+    "category": "version_specific",
+    "question": "Does NexaDesk offer AI smart reply features?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "ai_copilot_features.md",
+    "expected_section": "Features",
+    "expected_key_facts": [
+      "ai copilot smart replies",
+      "suggested draft responses",
+      "conversation summarization"
+    ],
+    "prohibited_keywords": [
+      "ai is not available in v3"
+    ],
+    "expected_answer": "Yes, NexaDesk v3.0 features AI Copilot, which dynamically generates context-aware draft reply suggestions and summaries for support agents.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "Does NexaDesk offer AI smart reply features?"
+  },
+  {
+    "id": "vd_sso_v1",
+    "category": "version_specific",
+    "question": "Can we configure Okta SAML Single Sign-On?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "user_roles_guide.docx",
+    "expected_section": "Standard Roles in v1.0",
+    "expected_key_facts": [
+      "saml sso not supported in v1.0",
+      "password-based login only"
+    ],
+    "prohibited_keywords": [
+      "configure sso under security tab in v1"
+    ],
+    "expected_answer": "No. NexaDesk v1.0 does not support SAML 2.0 Single Sign-On. Users authenticate via local email and password credentials.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "Can we configure Okta SAML Single Sign-On?"
+  },
+  {
+    "id": "vd_sso_v2",
+    "category": "version_specific",
+    "question": "Can we configure Okta SAML Single Sign-On?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "rbac_and_round_robin.docx",
+    "expected_section": "Enhanced RBAC Roles",
+    "expected_key_facts": [
+      "sso not supported in v2.0",
+      "standard credentials"
+    ],
+    "prohibited_keywords": [
+      "saml sso available in v2"
+    ],
+    "expected_answer": "No. SAML Single Sign-On is not available in NexaDesk v2.0; it is introduced in NexaDesk v3.0 Enterprise.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "Can we configure Okta SAML Single Sign-On?"
+  },
+  {
+    "id": "vd_sso_v3",
+    "category": "version_specific",
+    "question": "Can we configure Okta SAML Single Sign-On?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "enterprise_ai_and_sso.pdf",
+    "expected_section": "Doc 70E14D5F5D5B Enterprise Ai And Sso",
+    "expected_key_facts": [
+      "saml 2.0 sso supported",
+      "okta integration",
+      "enterprise tier"
+    ],
+    "prohibited_keywords": [
+      "sso is not supported"
+    ],
+    "expected_answer": "Yes, NexaDesk v3.0 supports Okta and Azure AD SAML 2.0 Single Sign-On on the Enterprise plan.",
+    "should_abstain": false,
+    "query_type": "version_differentiating",
+    "query": "Can we configure Okta SAML Single Sign-On?"
+  },
+  {
+    "id": "un_v1_001",
+    "category": "unsupported_features",
+    "question": "How do I create a webhook in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "ticket_management.md",
+    "expected_section": "Limitations in v1.0",
+    "expected_key_facts": [
+      "webhooks not supported in v1.0",
+      "introduced in v2.0"
+    ],
+    "prohibited_keywords": [
+      "go to webhooks tab in v1"
+    ],
+    "expected_answer": "Webhooks are not supported in NexaDesk v1.0. Outbound webhooks and API integrations were introduced in NexaDesk v2.0.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "How do I create a webhook in NexaDesk v1.0?"
+  },
+  {
+    "id": "un_v1_002",
+    "category": "unsupported_features",
+    "question": "Can I integrate NexaDesk v1.0 with Microsoft Teams?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Features",
+    "expected_key_facts": [
+      "teams not supported in v1.0",
+      "email integration only"
+    ],
+    "prohibited_keywords": [
+      "connect teams webhook in v1"
+    ],
+    "expected_answer": "No. NexaDesk v1.0 only supports email communication; Microsoft Teams integration is not supported in v1.0.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "Can I integrate NexaDesk v1.0 with Microsoft Teams?"
+  },
+  {
+    "id": "un_v2_001",
+    "category": "unsupported_features",
+    "question": "How do I build a visual workflow with NexaFlow in v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "What's New in v2.0",
+    "expected_key_facts": [
+      "nexaflow studio not in v2.0",
+      "introduced in v3.0",
+      "rule triggers only in v2"
+    ],
+    "prohibited_keywords": [
+      "open nexaflow canvas in v2"
+    ],
+    "expected_answer": "NexaFlow Studio is not available in v2.0. Version 2.0 uses rule-based triggers and round-robin routing; NexaFlow visual canvas was launched in v3.0.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "How do I build a visual workflow with NexaFlow in v2.0?"
+  },
+  {
+    "id": "un_v2_002",
+    "category": "unsupported_features",
+    "question": "Does NexaDesk v2.0 support SCIM automatic user provisioning?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "rbac_and_round_robin.docx",
+    "expected_section": "Enhanced RBAC Roles",
+    "expected_key_facts": [
+      "scim not supported in v2.0",
+      "manual admin invitation only"
+    ],
+    "prohibited_keywords": [
+      "scim endpoint in v2"
+    ],
+    "expected_answer": "No. NexaDesk v2.0 does not support SCIM user provisioning. Team members must be invited manually via email by an Administrator.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "Does NexaDesk v2.0 support SCIM automatic user provisioning?"
+  },
+  {
+    "id": "un_v1_003",
+    "category": "unsupported_features",
+    "question": "Can I set up multi-brand support portals in NexaDesk v1.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "ticket_management.md",
+    "expected_section": "Limitations in v1.0",
+    "expected_key_facts": [
+      "single portal only",
+      "multi-brand not supported in v1.0"
+    ],
+    "prohibited_keywords": [
+      "multi-brand supported"
+    ],
+    "expected_answer": "No, NexaDesk v1.0 only supports a single organization support portal. Multi-brand management is not available in this version.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "Can I set up multi-brand support portals in NexaDesk v1.0?"
+  },
+  {
+    "id": "un_v2_003",
+    "category": "unsupported_features",
+    "question": "Can I use AI to auto-tag tickets by sentiment in v2.0?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "automations_and_routing.md",
+    "expected_section": "Automation Triggers",
+    "expected_key_facts": [
+      "ai sentiment auto-tagging not in v2.0",
+      "keyword-based rules only in v2"
+    ],
+    "prohibited_keywords": [
+      "ai sentiment is supported in v2"
+    ],
+    "expected_answer": "No. NexaDesk v2.0 does not have AI sentiment analysis. Tagging in v2.0 is based on explicit keyword rules and condition matches.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "Can I use AI to auto-tag tickets by sentiment in v2.0?"
+  },
+  {
+    "id": "un_v3_001",
+    "category": "unsupported_features",
+    "question": "Can I run NexaDesk v3.0 as an on-premise air-gapped installation?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Innovations in v3.0",
+    "expected_key_facts": [
+      "cloud saas only",
+      "air-gapped on-premise not supported"
+    ],
+    "prohibited_keywords": [
+      "download on-premise docker iso"
+    ],
+    "expected_answer": "No. NexaDesk v3.0 is provided exclusively as a managed multi-tenant and single-tenant Cloud SaaS offering and cannot be deployed in air-gapped on-premise data centers.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "Can I run NexaDesk v3.0 as an on-premise air-gapped installation?"
+  },
+  {
+    "id": "un_v1_004",
+    "category": "unsupported_features",
+    "question": "Does v1.0 have custom agent permission matrices?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "user_roles_guide.docx",
+    "expected_section": "Standard Roles in v1.0",
+    "expected_key_facts": [
+      "fixed roles only",
+      "custom roles not supported in v1.0"
+    ],
+    "prohibited_keywords": [
+      "custom role creator in v1"
+    ],
+    "expected_answer": "No. NexaDesk v1.0 only provides three fixed roles (Admin, Agent, Viewer) and does not permit custom granular permission configurations.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "Does v1.0 have custom agent permission matrices?"
+  },
+  {
+    "id": "un_v2_004",
+    "category": "unsupported_features",
+    "question": "Can v2.0 automatically translate tickets from Japanese to English?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "What's New in v2.0",
+    "expected_key_facts": [
+      "real-time translation not supported in v2.0",
+      "introduced in v3.0"
+    ],
+    "prohibited_keywords": [
+      "v2 has live translation"
+    ],
+    "expected_answer": "No. Real-time language translation is not supported in v2.0; it was introduced as part of AI Copilot in NexaDesk v3.0.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "Can v2.0 automatically translate tickets from Japanese to English?"
+  },
+  {
+    "id": "un_v1_005",
+    "category": "unsupported_features",
+    "question": "Can I connect NexaDesk v1.0 to Jira Cloud for bi-directional issue syncing?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Features",
+    "expected_key_facts": [
+      "jira integration not supported in v1.0",
+      "no third party issue sync"
+    ],
+    "prohibited_keywords": [
+      "connect jira via settings in v1"
+    ],
+    "expected_answer": "No. NexaDesk v1.0 does not support Jira integrations or bi-directional issue syncing.",
+    "should_abstain": false,
+    "query_type": "unsupported_features",
+    "query": "Can I connect NexaDesk v1.0 to Jira Cloud for bi-directional issue syncing?"
+  },
+  {
+    "id": "amb_v1_001",
+    "category": "ambiguous_questions",
+    "question": "export",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "reporting_and_exports.md",
+    "expected_section": "Manual Report Exports in v1.0",
+    "expected_key_facts": [
+      "manual export",
+      "csv",
+      "pdf",
+      "analytics tab"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In NexaDesk v1.0, report exports are performed manually in CSV or PDF format from the Admin Analytics tab.",
+    "should_abstain": false,
+    "query_type": "ambiguous_queries",
+    "query": "export"
+  },
+  {
+    "id": "amb_v2_001",
+    "category": "ambiguous_questions",
+    "question": "cost",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "pricing_and_plans.md",
+    "expected_section": "Revised Tiers",
+    "expected_key_facts": [
+      "starter $29",
+      "pro $79",
+      "enterprise $199"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "NexaDesk v2.0 pricing plans are Starter ($29/mo), Pro ($79/mo), and Enterprise ($199/mo), with 15% discounts on annual billing.",
+    "should_abstain": false,
+    "query_type": "ambiguous_queries",
+    "query": "cost"
+  },
+  {
+    "id": "amb_v3_001",
+    "category": "ambiguous_questions",
+    "question": "copilot",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "ai_copilot_features.md",
+    "expected_section": "Features",
+    "expected_key_facts": [
+      "ai copilot",
+      "draft replies",
+      "summaries",
+      "sentiment analysis"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v3.0, AI Copilot provides draft reply suggestions, ticket summarization, and customer sentiment detection directly within the agent inbox.",
+    "should_abstain": false,
+    "query_type": "ambiguous_queries",
+    "query": "copilot"
+  },
+  {
+    "id": "amb_v1_002",
+    "category": "ambiguous_questions",
+    "question": "permissions",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "user_roles_guide.docx",
+    "expected_section": "Standard Roles in v1.0",
+    "expected_key_facts": [
+      "admin",
+      "agent",
+      "viewer",
+      "role permissions"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "NexaDesk v1.0 permissions are governed by three user roles: Administrator (full access), Agent (ticket operations), and Viewer (read-only reports).",
+    "should_abstain": false,
+    "query_type": "ambiguous_queries",
+    "query": "permissions"
+  },
+  {
+    "id": "amb_v2_002",
+    "category": "ambiguous_questions",
+    "question": "routing",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "rbac_and_round_robin.docx",
+    "expected_section": "Automated Round-Robin Routing",
+    "expected_key_facts": [
+      "round-robin",
+      "automatic ticket distribution",
+      "support groups"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "NexaDesk v2.0 uses automated round-robin routing to distribute unassigned tickets equally across active support agents.",
+    "should_abstain": false,
+    "query_type": "ambiguous_queries",
+    "query": "routing"
+  },
+  {
+    "id": "amb_v3_002",
+    "category": "ambiguous_questions",
+    "question": "workflows",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "getting_started.md",
+    "expected_section": "Key Innovations in v3.0",
+    "expected_key_facts": [
+      "nexaflow studio",
+      "visual workflow canvas",
+      "automations"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v3.0, workflows are built visually using NexaFlow Studio, allowing drag-and-drop creation of custom multi-step ticket lifecycle automations.",
+    "should_abstain": false,
+    "query_type": "ambiguous_queries",
+    "query": "workflows"
+  },
+  {
+    "id": "amb_v1_003",
+    "category": "ambiguous_questions",
+    "question": "sla targets",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "email_and_sla_policy.pdf",
+    "expected_section": "Doc 16Da92764884 Email And Sla Policy",
+    "expected_key_facts": [
+      "8 hours first response",
+      "standard business hours"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v1.0, standard SLA first response time is 8 business hours for normal priority tickets.",
+    "should_abstain": false,
+    "query_type": "ambiguous_queries",
+    "query": "sla targets"
+  },
+  {
+    "id": "amb_v2_003",
+    "category": "ambiguous_questions",
+    "question": "slack",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": "omnichannel_and_webhooks.pdf",
+    "expected_section": "Doc Ccee7C6Ea12D Rbac And Round Robin",
+    "expected_key_facts": [
+      "slack incoming webhooks",
+      "ticket alerts"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "In v2.0, you can connect NexaDesk to Slack channels via incoming webhooks to receive real-time ticket alerts.",
+    "should_abstain": false,
+    "query_type": "ambiguous_queries",
+    "query": "slack"
+  },
+  {
+    "id": "amb_v3_003",
+    "category": "ambiguous_questions",
+    "question": "sso",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": "enterprise_ai_and_sso.pdf",
+    "expected_section": "Doc 70E14D5F5D5B Enterprise Ai And Sso",
+    "expected_key_facts": [
+      "saml 2.0 sso",
+      "okta",
+      "azure ad"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "NexaDesk v3.0 Enterprise supports SAML 2.0 Single Sign-On with Okta and Azure AD.",
+    "should_abstain": false,
+    "query_type": "ambiguous_queries",
+    "query": "sso"
+  },
+  {
+    "id": "amb_v1_004",
+    "category": "ambiguous_questions",
+    "question": "plans",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": "pricing_and_plans.md",
+    "expected_section": "Tier Overview",
+    "expected_key_facts": [
+      "starter $19",
+      "growth $49"
+    ],
+    "prohibited_keywords": [],
+    "expected_answer": "NexaDesk v1.0 offers the Starter plan at $19/month and the Growth plan at $49/month.",
+    "should_abstain": false,
+    "query_type": "ambiguous_queries",
+    "query": "plans"
+  },
+  {
+    "id": "ood_001",
+    "category": "out_of_domain",
+    "question": "What is the authentic recipe for baking chocolate chip cookies?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": null,
+    "expected_section": null,
+    "expected_key_facts": [],
+    "prohibited_keywords": [],
+    "expected_answer": "I cannot find verified information regarding this in the available NexaDesk v1.0 documentation. Please contact support.",
+    "should_abstain": true,
     "query_type": "out_of_domain",
-    "should_abstain": true
+    "query": "What is the authentic recipe for baking chocolate chip cookies?"
+  },
+  {
+    "id": "ood_002",
+    "category": "out_of_domain",
+    "question": "Who won the FIFA World Cup in 2022 in Qatar?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": null,
+    "expected_section": null,
+    "expected_key_facts": [],
+    "prohibited_keywords": [],
+    "expected_answer": "I cannot find verified information regarding this in the available NexaDesk v2.0 documentation. Please contact support.",
+    "should_abstain": true,
+    "query_type": "out_of_domain",
+    "query": "Who won the FIFA World Cup in 2022 in Qatar?"
+  },
+  {
+    "id": "ood_003",
+    "category": "out_of_domain",
+    "question": "How do I calculate the eigenvalues of a 3x3 matrix in Python?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": null,
+    "expected_section": null,
+    "expected_key_facts": [],
+    "prohibited_keywords": [],
+    "expected_answer": "I cannot find verified information regarding this in the available NexaDesk v3.0 documentation. Please contact support.",
+    "should_abstain": true,
+    "query_type": "out_of_domain",
+    "query": "How do I calculate the eigenvalues of a 3x3 matrix in Python?"
+  },
+  {
+    "id": "ood_004",
+    "category": "out_of_domain",
+    "question": "What are the common symptoms of acute appendicitis?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": null,
+    "expected_section": null,
+    "expected_key_facts": [],
+    "prohibited_keywords": [],
+    "expected_answer": "I cannot find verified information regarding this in the available NexaDesk v1.0 documentation. Please contact support.",
+    "should_abstain": true,
+    "query_type": "out_of_domain",
+    "query": "What are the common symptoms of acute appendicitis?"
+  },
+  {
+    "id": "ood_005",
+    "category": "out_of_domain",
+    "question": "What is the speed of light in kilometers per second?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": null,
+    "expected_section": null,
+    "expected_key_facts": [],
+    "prohibited_keywords": [],
+    "expected_answer": "I cannot find verified information regarding this in the available NexaDesk v2.0 documentation. Please contact support.",
+    "should_abstain": true,
+    "query_type": "out_of_domain",
+    "query": "What is the speed of light in kilometers per second?"
+  },
+  {
+    "id": "ood_006",
+    "category": "out_of_domain",
+    "question": "How do I fix a leaking bathroom faucet cartridge?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": null,
+    "expected_section": null,
+    "expected_key_facts": [],
+    "prohibited_keywords": [],
+    "expected_answer": "I cannot find verified information regarding this in the available NexaDesk v3.0 documentation. Please contact support.",
+    "should_abstain": true,
+    "query_type": "out_of_domain",
+    "query": "How do I fix a leaking bathroom faucet cartridge?"
+  },
+  {
+    "id": "ood_007",
+    "category": "out_of_domain",
+    "question": "What are the top tourist attractions to visit in Kyoto, Japan?",
+    "product_name": "NexaDesk",
+    "product_version": "v1.0",
+    "expected_relevant_document": null,
+    "expected_section": null,
+    "expected_key_facts": [],
+    "prohibited_keywords": [],
+    "expected_answer": "I cannot find verified information regarding this in the available NexaDesk v1.0 documentation. Please contact support.",
+    "should_abstain": true,
+    "query_type": "out_of_domain",
+    "query": "What are the top tourist attractions to visit in Kyoto, Japan?"
+  },
+  {
+    "id": "ood_008",
+    "category": "out_of_domain",
+    "question": "Can you write a poem about autumn leaves falling in the wind?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": null,
+    "expected_section": null,
+    "expected_key_facts": [],
+    "prohibited_keywords": [],
+    "expected_answer": "I cannot find verified information regarding this in the available NexaDesk v2.0 documentation. Please contact support.",
+    "should_abstain": true,
+    "query_type": "out_of_domain",
+    "query": "Can you write a poem about autumn leaves falling in the wind?"
+  },
+  {
+    "id": "ood_009",
+    "category": "out_of_domain",
+    "question": "What is the capital city of Australia?",
+    "product_name": "NexaDesk",
+    "product_version": "v3.0",
+    "expected_relevant_document": null,
+    "expected_section": null,
+    "expected_key_facts": [],
+    "prohibited_keywords": [],
+    "expected_answer": "I cannot find verified information regarding this in the available NexaDesk v3.0 documentation. Please contact support.",
+    "should_abstain": true,
+    "query_type": "out_of_domain",
+    "query": "What is the capital city of Australia?"
+  },
+  {
+    "id": "ood_010",
+    "category": "out_of_domain",
+    "question": "How do I invest in index funds for retirement?",
+    "product_name": "NexaDesk",
+    "product_version": "v2.0",
+    "expected_relevant_document": null,
+    "expected_section": null,
+    "expected_key_facts": [],
+    "prohibited_keywords": [],
+    "expected_answer": "I cannot find verified information regarding this in the available NexaDesk v2.0 documentation. Please contact support.",
+    "should_abstain": true,
+    "query_type": "out_of_domain",
+    "query": "How do I invest in index funds for retirement?"
   }
 ]
-
