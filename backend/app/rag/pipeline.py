@@ -381,10 +381,19 @@ class VersionAwareRAGPipeline:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute(
                     """
-                    INSERT INTO enquiry_logs (session_id, user_query, product_version, response_text, sources)
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO enquiry_logs (session_id, user_query, product_version, response_text, sources, latency_ms, retrieval_mode, abstained)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """,
-                    (conv_id, question, product_version, gen_res["answer"], json.dumps(citations_data))
+                    (
+                        conv_id,
+                        question,
+                        product_version,
+                        gen_res["answer"],
+                        json.dumps(citations_data),
+                        elapsed_ms,
+                        retrieval_mode,
+                        1 if gen_res.get("abstained", False) else 0
+                    )
                 )
                 conn.commit()
         except Exception as e:

@@ -40,9 +40,22 @@ def init_database() -> None:
                     product_version TEXT NOT NULL,
                     response_text TEXT,
                     sources TEXT,
+                    latency_ms REAL DEFAULT 0.0,
+                    retrieval_mode TEXT DEFAULT 'hybrid',
+                    abstained INTEGER DEFAULT 0,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+
+            # Ensure columns exist if table was created in earlier phases
+            cursor.execute("PRAGMA table_info(enquiry_logs)")
+            existing_cols = [c[1] for c in cursor.fetchall()]
+            if "latency_ms" not in existing_cols:
+                cursor.execute("ALTER TABLE enquiry_logs ADD COLUMN latency_ms REAL DEFAULT 0.0")
+            if "retrieval_mode" not in existing_cols:
+                cursor.execute("ALTER TABLE enquiry_logs ADD COLUMN retrieval_mode TEXT DEFAULT 'hybrid'")
+            if "abstained" not in existing_cols:
+                cursor.execute("ALTER TABLE enquiry_logs ADD COLUMN abstained INTEGER DEFAULT 0")
 
             # 3. Documents table (Phase 2 Ingestion)
             cursor.execute("""

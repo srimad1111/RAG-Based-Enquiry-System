@@ -35,7 +35,13 @@ def get_analytics_overview() -> Dict[str, Any]:
 )
 def get_evaluation_report() -> Dict[str, Any]:
     try:
-        return evaluation_service.get_latest_report()
+        report = evaluation_service.get_latest_report_optional()
+        if not report:
+            return {
+                "status": "empty",
+                "message": "No evaluation benchmark has been executed yet. Run the benchmark to compute RAG Triad scores."
+            }
+        return report
     except Exception as e:
         logger.error(f"Error fetching evaluation report: {e}", exc_info=True)
         raise HTTPException(

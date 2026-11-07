@@ -260,42 +260,83 @@ class EvaluationService:
 
         return report
 
-    def get_latest_report(self) -> Dict[str, Any]:
-        """Fetch the most recent evaluation report or generate one if missing."""
+    def get_latest_report_optional(self) -> Optional[Dict[str, Any]]:
+        """Fetch the most recent evaluation report or return None if not yet executed."""
         if EVALUATION_RESULTS_FILE.exists():
             try:
                 with open(EVALUATION_RESULTS_FILE, "r", encoding="utf-8") as f:
                     return json.load(f)
             except Exception as e:
                 logger.warning(f"Error reading report file: {e}")
+        return None
+
+    def get_latest_report(self) -> Dict[str, Any]:
+        """Fetch the most recent evaluation report or generate one if missing."""
+        report = self.get_latest_report_optional()
+        if report:
+            return report
         return self.run_benchmark_suite()
 
     def get_system_metrics_overview(self) -> Dict[str, Any]:
         """Aggregate high-level operational and evaluation statistics."""
-        latest_report = self.get_latest_report()
+        latest_report = self.get_latest_report_optional()
 
         total_enquiries = 0
+        successful_responses = 0
+        abstained_enquiries = 0
         version_counts = {}
+        retrieval_mode_counts = {}
+        avg_latency = 0.0
+
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
                 cursor.execute("SELECT COUNT(*) FROM enquiry_logs")
                 total_enquiries = cursor.fetchone()[0]
 
+                cursor.execute("PRAGMA table_info(enquiry_logs)")
+                cols = [c[1] for c in cursor.fetchall()]
+
+                if "abstained" in cols:
+                    cursor.execute("SELECT COUNT(*) FROM enquiry_logs WHERE abstained = 1")
+                    abstained_enquiries = cursor.fetchone()[0]
+                    successful_responses = max(0, total_enquiries - abstained_enquiries)
+                else:
+                    successful_responses = total_enquiries
+
                 cursor.execute("SELECT product_version, COUNT(*) FROM enquiry_logs GROUP BY product_version")
                 for ver, cnt in cursor.fetchall():
                     version_counts[ver] = cnt
-        except Exception:
-            pass
+
+                if "retrieval_mode" in cols:
+                    cursor.execute("SELECT retrieval_mode, COUNT(*) FROM enquiry_logs GROUP BY retrieval_mode")
+                    for mode, cnt in cursor.fetchall():
+                        retrieval_mode_counts[mode or "hybrid"] = cnt
+                else:
+                    retrieval_mode_counts["hybrid"] = total_enquiries
+
+                if "latency_ms" in cols:
+                    cursor.execute("SELECT AVG(latency_ms) FROM enquiry_logs WHERE latency_ms > 0")
+                    row = cursor.fetchone()
+                    if row and row[0] is not None:
+                        avg_latency = round(float(row[0]), 2)
+        except Exception as e:
+            logger.warning(f"Error reading system metrics overview from SQLite: {e}")
 
         return {
+            "total_queries": total_enquiries,
             "total_customer_enquiries_served": total_enquiries,
+            "successful_responses": successful_responses,
+            "abstained_queries": abstained_enquiries,
             "enquiries_by_version": version_counts,
-            "rag_triad": latest_report.get("rag_triad_scores", {}),
-            "version_isolation_accuracy": latest_report.get("version_safety", {}).get("version_isolation_accuracy_percentage", 100.0),
-            "abstention_recall": latest_report.get("abstention_guard", {}).get("abstention_recall_percentage", 100.0),
-            "latency": latest_report.get("latency_benchmarks", {}),
-            "evaluation_timestamp": latest_report.get("timestamp")
+            "enquiries_by_retrieval_mode": retrieval_mode_counts,
+            "avg_latency_ms": avg_latency,
+            "has_evaluation_report": latest_report is not None,
+            "rag_triad": latest_report.get("rag_triad_scores", {}) if latest_report else None,
+            "version_isolation_accuracy": latest_report.get("version_safety", {}).get("version_isolation_accuracy_percentage") if latest_report else None,
+            "abstention_recall": latest_report.get("abstention_guard", {}).get("abstention_recall_percentage") if latest_report else None,
+            "latency": latest_report.get("latency_benchmarks", {}) if latest_report else None,
+            "evaluation_timestamp": latest_report.get("timestamp") if latest_report else None
         }
 
 

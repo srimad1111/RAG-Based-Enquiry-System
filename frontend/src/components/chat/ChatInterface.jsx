@@ -26,7 +26,9 @@ import {
   Trash2,
   ExternalLink,
   ChevronDown,
-  X
+  X,
+  Copy,
+  Check
 } from 'lucide-react';
 import { useSystem } from '../../context/SystemContext';
 import chatService from '../../services/chatService';
@@ -38,6 +40,20 @@ export function ChatInterface() {
 
   // Navigation tab: 'chat' (Phase 5) or 'inspector' (Phase 4)
   const [activeTab, setActiveTab] = useState('chat');
+  const [selectedProduct, setSelectedProduct] = useState('NexaDesk');
+  const [copiedMessageId, setCopiedMessageId] = useState(null);
+
+  const handleCopyAnswer = (messageId, text) => {
+    try {
+      navigator.clipboard.writeText(text);
+      setCopiedMessageId(messageId);
+      setTimeout(() => {
+        setCopiedMessageId((prev) => (prev === messageId ? null : prev));
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+    }
+  };
 
   // Conversation State
   const [conversationId, setConversationId] = useState(() => `conv_${Date.now()}`);
@@ -156,7 +172,7 @@ export function ChatInterface() {
       const res = await chatService.submitEnquiry({
         question: q,
         product_version: selectedVersion,
-        product_name: 'NexaDesk',
+        product_name: selectedProduct,
         conversation_id: conversationId,
         retrieval_mode: retrievalMode,
         top_k: topK,
@@ -294,7 +310,19 @@ export function ChatInterface() {
         </div>
 
         {/* Scope and Controls */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3 flex-wrap gap-y-2">
+          {/* Product Selector */}
+          <div className="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg">
+            <span className="text-[11px] font-semibold text-slate-500">Product:</span>
+            <select
+              value={selectedProduct}
+              onChange={(e) => setSelectedProduct(e.target.value)}
+              className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
+            >
+              <option value="NexaDesk">NexaDesk</option>
+            </select>
+          </div>
+
           {/* Target Version Selector */}
           <div className="flex items-center bg-slate-50 border border-slate-200 p-1 rounded-lg">
             <span className="text-[11px] font-semibold text-slate-500 px-2">Doc Scope:</span>
@@ -451,11 +479,32 @@ export function ChatInterface() {
                     </div>
                   )}
 
-                  {/* Message Timestamp & Latency */}
-                  <div className="flex items-center justify-between text-[10px] pt-1">
-                    <span className={msg.role === 'user' ? 'text-indigo-200' : 'text-slate-400'}>
-                      {msg.timestamp}
-                    </span>
+                  {/* Message Timestamp, Copy Button & Latency */}
+                  <div className="flex items-center justify-between text-[10px] pt-1 border-t border-slate-50 mt-1">
+                    <div className="flex items-center space-x-2">
+                      <span className={msg.role === 'user' ? 'text-indigo-200' : 'text-slate-400'}>
+                        {msg.timestamp}
+                      </span>
+                      {msg.role === 'assistant' && (
+                        <button
+                          onClick={() => handleCopyAnswer(msg.id, msg.content)}
+                          className="text-[10px] text-slate-400 hover:text-indigo-600 flex items-center space-x-1 transition-colors"
+                          title="Copy answer to clipboard"
+                        >
+                          {copiedMessageId === msg.id ? (
+                            <>
+                              <Check size={11} className="text-emerald-500" />
+                              <span className="text-emerald-600 font-semibold">Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy size={11} />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
                     {msg.latency_ms && (
                       <span className="font-mono text-slate-400">
                         {msg.latency_ms} ms · {msg.model_used}
