@@ -1,11 +1,12 @@
 """
-Script to generate actual binary sample documents (PDF, DOCX, TXT)
-across NexaDesk v1.0, v2.0, and v3.0 with distinct feature behaviors.
+Script to generate actual binary sample documents (PDF, DOCX, TXT, MD)
+across NexaDesk v1.0, v2.0, and v3.0 with distinct feature behaviors,
+including versioned report export capabilities.
 """
 
 from pathlib import Path
 import docx
-import pymupdf as fitz  # PyMuPDF
+import pymupdf as fitz
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DOCS_DIR = BASE_DIR / "backend" / "data" / "documents" / "NexaDesk"
@@ -16,11 +17,8 @@ def create_pdf(file_path: Path, title: str, sections: list):
     doc = fitz.open()
     for sec_title, sec_text in sections:
         page = doc.new_page(width=595, height=842)  # A4 size
-        # Header
         page.insert_text(fitz.Point(50, 60), title, fontsize=11, color=(0.4, 0.4, 0.4))
-        # Section Heading
         page.insert_text(fitz.Point(50, 100), sec_title, fontsize=16, color=(0.1, 0.1, 0.6))
-        # Body text
         rect = fitz.Rect(50, 130, 545, 780)
         page.insert_textbox(rect, sec_text, fontsize=10, lineheight=1.3)
     doc.save(str(file_path))
@@ -32,11 +30,9 @@ def create_docx(file_path: Path, title: str, sections: list):
     """Generate an actual DOCX file with python-docx with headings and tables."""
     doc = docx.Document()
     doc.add_heading(title, level=0)
-
     for sec_title, sec_text in sections:
         doc.add_heading(sec_title, level=1)
         doc.add_paragraph(sec_text)
-
     doc.save(str(file_path))
     print(f"  [+] Created DOCX: {file_path.name}")
 
@@ -50,11 +46,20 @@ def create_txt(file_path: Path, title: str, sections: list):
     print(f"  [+] Created TXT: {file_path.name}")
 
 
+def create_md(file_path: Path, title: str, sections: list):
+    """Generate a clean Markdown file with section headers."""
+    content = f"# {title}\n\n"
+    for sec_title, sec_text in sections:
+        content += f"## {sec_title}\n\n{sec_text}\n\n"
+    file_path.write_text(content.strip(), encoding="utf-8")
+    print(f"  [+] Created MD: {file_path.name}")
+
+
 def generate_all():
-    print("Generating real PDF, DOCX, and TXT documentation for NexaDesk...")
+    print("Generating real documentation files for NexaDesk across v1.0, v2.0, and v3.0...")
 
     # ==========================================
-    # Version 1.0 Sample Binary Docs
+    # Version 1.0 Docs
     # ==========================================
     v1_dir = DOCS_DIR / "v1.0"
     v1_dir.mkdir(parents=True, exist_ok=True)
@@ -68,8 +73,7 @@ def generate_all():
                 "In NexaDesk v1.0, email ingestion is handled strictly via scheduled POP3/IMAP polling.\n\n"
                 "System administrators must provide the mail server host, port 995 for SSL POP3, or port 993 for IMAP.\n"
                 "The email polling worker runs once every 10 minutes. Real-time push webhooks are NOT supported in v1.0.\n"
-                "Attachment Limitation: Incoming emails with attachments exceeding 5 MB will be rejected with an automated bounce notice.\n"
-                "Manual assignment is required for all imported emails."
+                "Attachment Limitation: Incoming emails with attachments exceeding 5 MB will be rejected."
             ),
             (
                 "SLA Policy and Resolution Deadlines",
@@ -77,8 +81,7 @@ def generate_all():
                 "1. Urgent Severity: 4 hours total resolution deadline.\n"
                 "2. Medium Severity: 12 hours total resolution deadline.\n"
                 "3. Low Severity: 24 hours total resolution deadline.\n\n"
-                "Note on Business Hours: In v1.0, SLA clocks run continuously 24/7. Support for holiday calendars "
-                "or business-hour exclusions is not available until future releases."
+                "SLA clocks run 24/7 without business-hour exclusions."
             )
         ]
     )
@@ -90,9 +93,9 @@ def generate_all():
             (
                 "Standard Roles in v1.0",
                 "NexaDesk v1.0 supports exactly two user roles: Administrator and Agent.\n\n"
-                "- Administrator: Full system access, email mailbox settings, user provisioning, and raw log viewing.\n"
-                "- Agent: Can view assigned tickets, post public replies, add internal notes, and mark tickets as closed.\n\n"
-                "Granular permissions, custom role creation, or view-only auditor roles are not supported in version 1.0."
+                "- Administrator: Full system access, email mailbox settings, user provisioning.\n"
+                "- Agent: Can view assigned tickets, post public replies, and mark tickets as closed.\n\n"
+                "Granular permissions or custom roles are not supported in version 1.0."
             )
         ]
     )
@@ -104,15 +107,29 @@ def generate_all():
             (
                 "Monthly Subscription Tiers",
                 "Free Community: Free for up to 2 agents, 100 tickets per month.\n"
-                "Starter Tier: $19 per agent per month, unlimited tickets, standard email support.\n"
-                "Pro Tier: $49 per agent per month, custom email domain, priority queue.\n\n"
-                "Billing Policy: All billing is month-to-month. Annual pre-payment discounts are not offered in v1.0."
+                "Starter Tier: $19 per agent per month, unlimited tickets, email support.\n"
+                "Pro Tier: $49 per agent per month, custom domain, priority queue.\n\n"
+                "Billing Policy: All billing is month-to-month. Annual discounts are NOT available in v1.0."
+            )
+        ]
+    )
+
+    create_md(
+        v1_dir / "reporting_and_exports.md",
+        "NexaDesk v1.0 Reporting and Analytics",
+        [
+            (
+                "Manual Report Exports in v1.0",
+                "NexaDesk v1.0 supports manual report exports only.\n\n"
+                "Administrators must manually click the 'Export CSV' button on the ticket ledger page to download ticket history.\n"
+                "Supported format: Raw CSV format only.\n"
+                "Scheduled report delivery, recurring email reports, and automated background exports are NOT supported in v1.0."
             )
         ]
     )
 
     # ==========================================
-    # Version 2.0 Sample Binary Docs
+    # Version 2.0 Docs
     # ==========================================
     v2_dir = DOCS_DIR / "v2.0"
     v2_dir.mkdir(parents=True, exist_ok=True)
@@ -123,19 +140,15 @@ def generate_all():
         [
             (
                 "Deprecation of POP3 and Real-Time Webhooks",
-                "Important Architectural Change in v2.0:\n\n"
                 "The legacy POP3 polling worker from v1.0 is officially DEPRECATED.\n"
-                "Incoming emails must now be routed via SendGrid Inbound Parse or Mailgun HTTP Webhooks, "
-                "providing instant, sub-second ticket creation.\n"
-                "Maximum attachment size has been increased from 5 MB to 25 MB.\n"
-                "Customers still relying on POP3 must upgrade their inbound MX records to webhooks."
+                "Incoming emails must now be routed via SendGrid Inbound Parse or Mailgun HTTP Webhooks.\n"
+                "Maximum attachment size has been increased to 25 MB."
             ),
             (
                 "Live Chat Widget and Slack Integration",
-                "NexaDesk v2.0 introduces omnichannel communication:\n\n"
-                "- Web Live Chat Widget: Embeddable JavaScript snippet for customer portals.\n"
-                "- Slack Support App: Bi-directional sync allowing agents to respond to customer inquiries "
-                "directly from dedicated Slack channels without opening the web dashboard."
+                "NexaDesk v2.0 introduces omnichannel communication:\n"
+                "- Web Live Chat Widget for customer websites.\n"
+                "- Slack Support App allowing agents to respond to customer inquiries from Slack."
             )
         ]
     )
@@ -146,17 +159,11 @@ def generate_all():
         [
             (
                 "Enhanced RBAC Roles",
-                "NexaDesk v2.0 expands user roles to four distinct tiers:\n"
-                "1. Admin: Complete control over billing, integrations, and global settings.\n"
-                "2. Manager: Can configure round-robin rules, reassign any agent ticket, and inspect SLA analytics.\n"
-                "3. Agent: Answers customer tickets and manages individual status (Online, Busy, Away).\n"
-                "4. Read-Only Viewer: Intended for external auditors and executives."
+                "NexaDesk v2.0 expands user roles to four tiers: Admin, Manager, Agent, and Read-Only Viewer."
             ),
             (
                 "Automated Round-Robin Routing",
-                "In v2.0, manual ticket assignment is replaced by automated round-robin dispatch.\n"
-                "Incoming tickets are assigned to the online agent with the lowest number of currently open tickets.\n"
-                "Routing rules can be filtered by tag, priority, or customer language."
+                "In v2.0, manual ticket assignment is replaced by automated round-robin dispatch based on agent capacity."
             )
         ]
     )
@@ -167,16 +174,31 @@ def generate_all():
         [
             (
                 "Revised Subscription Plans",
-                "Starter Tier: $29 per agent per month, includes Live Chat widget, up to 5 agents.\n"
+                "Starter Tier: $29 per agent per month, includes Live Chat widget.\n"
                 "Growth Tier: $79 per agent per month, includes Round-Robin routing and Slack integration.\n"
-                "Enterprise Tier: $149 per agent per month, custom SLA schedules, dedicated account manager.\n\n"
+                "Enterprise Tier: $149 per agent per month, custom SLA schedules.\n\n"
                 "Annual Discount: 15% discount applies when paying annually upfront."
             )
         ]
     )
 
+    create_md(
+        v2_dir / "reporting_and_exports.md",
+        "NexaDesk v2.0 Reporting and Analytics",
+        [
+            (
+                "Scheduled Report Exports in v2.0",
+                "NexaDesk v2.0 introduces scheduled report exports.\n\n"
+                "Team managers can set up automated recurring schedules: Daily, Weekly on Mondays, or Monthly on the 1st.\n"
+                "Reports are automatically compiled in the background and delivered via email to designated management distribution lists.\n"
+                "Supported formats in v2.0: CSV and PDF summary report.\n"
+                "Real-time AI automated anomaly prediction is not supported in v2.0."
+            )
+        ]
+    )
+
     # ==========================================
-    # Version 3.0 Sample Binary Docs
+    # Version 3.0 Docs
     # ==========================================
     v3_dir = DOCS_DIR / "v3.0"
     v3_dir.mkdir(parents=True, exist_ok=True)
@@ -187,18 +209,14 @@ def generate_all():
         [
             (
                 "NexaDesk AI Copilot Architecture",
-                "NexaDesk v3.0 integrates deep generative AI directly into the agent response editor:\n\n"
-                "- Smart Draft Generator: Generates grounded response suggestions using company documentation.\n"
-                "- Ticket Sentiment Analyzer: Detects escalating customer frustration and alerts shift managers.\n"
-                "- Instant Thread Summarizer: Condenses 20+ message email chains into three bullet points.\n"
-                "AI responses must be reviewed and approved by a human agent before sending."
+                "NexaDesk v3.0 integrates deep generative AI:\n"
+                "- Smart Draft Generator grounded in company documentation.\n"
+                "- Ticket Sentiment Analyzer detecting customer frustration.\n"
+                "- Instant Thread Summarizer condensing long email chains into three bullets."
             ),
             (
                 "Enterprise SAML 2.0 and Multi-Brand SSO",
-                "Version 3.0 introduces Enterprise Identity Management:\n\n"
-                "- Native SAML 2.0 integration supporting Okta, Microsoft Entra ID (Azure AD), and Google Workspace.\n"
-                "- Just-In-Time (JIT) user provisioning with SCIM 2.0.\n"
-                "- Multi-Brand Customer Portals: Manage up to 10 distinct brands with separate styling and domain names."
+                "Version 3.0 introduces native SAML 2.0 SSO supporting Okta, Microsoft Entra ID (Azure AD), and Google Workspace."
             )
         ]
     )
@@ -209,15 +227,11 @@ def generate_all():
         [
             (
                 "NexaFlow Visual Studio",
-                "NexaFlow Studio replaces the linear round-robin rules from v2.0 with a visual drag-and-drop builder.\n"
-                "Admins can construct conditional branching nodes, invoke external REST webhooks, and trigger AI sentiment analysis.\n"
-                "v2.0 rules are automatically migrated to NexaFlow workflows upon upgrading."
+                "NexaFlow Studio replaces v2.0 linear rules with a visual drag-and-drop workflow canvas."
             ),
             (
                 "Unified GraphQL & REST v3 Endpoints",
-                "NexaDesk v3.0 deprecates REST API v1 (HTTP 410 Gone).\n"
-                "Developers can query the unified GraphQL endpoint (/graphql) for high-frequency queries "
-                "or utilize REST API v3 (/api/v3) with complete OpenAPI 3.1 specifications."
+                "NexaDesk v3.0 deprecates REST API v1. Provides a unified GraphQL endpoint alongside REST API v3."
             )
         ]
     )
@@ -230,13 +244,28 @@ def generate_all():
                 "Enterprise AI Subscription Plans",
                 "Growth Tier: $99 per agent per month, includes NexaFlow Studio and 1,000 AI Copilot credits.\n"
                 "Scale Tier: $189 per agent per month, includes SAML SSO, 10 brands, 5,000 AI credits.\n"
-                "Enterprise Tier: Custom pricing, unlimited brands, private VPC deployment, 99.99% uptime SLA.\n\n"
+                "Enterprise Tier: Custom pricing, unlimited brands, 99.99% uptime SLA.\n\n"
                 "Annual Discount: 20% discount on all annual subscriptions."
             )
         ]
     )
 
-    print("\nAll binary and text sample documentation generated successfully!")
+    create_md(
+        v3_dir / "reporting_and_exports.md",
+        "NexaDesk v3.0 Reporting and Analytics",
+        [
+            (
+                "Scheduled and Automated Report Exports in v3.0",
+                "NexaDesk v3.0 supports scheduled and automated report exports powered by AI Copilot intelligence.\n\n"
+                "Features include:\n"
+                "1. Automated Triggered Exports: Exports fire automatically whenever CSAT dips below threshold or SLA breaches exceed 3%.\n"
+                "2. Scheduled Recurring Delivery: High-resolution PDF, Excel, and JSON delivered via Slack, Webhooks, or Secure SFTP.\n"
+                "3. AI Executive Summaries: Each exported report includes an LLM-synthesized narrative summary highlighting root causes and agent workload bottlenecks."
+            )
+        ]
+    )
+
+    print("\nAll documentation files generated successfully!")
 
 
 if __name__ == "__main__":

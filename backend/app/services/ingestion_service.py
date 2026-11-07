@@ -202,6 +202,13 @@ class IngestionService:
             }
             processed_json_path.write_text(json.dumps(processed_data, indent=2), encoding="utf-8")
 
+            # Sync vector embeddings to ChromaDB (Phase 3)
+            try:
+                from app.rag.vector_store import chroma_vector_store
+                chroma_vector_store.index_chunks(chunks)
+            except Exception as e:
+                logger.warning(f"Could not sync chunks into ChromaDB for {doc_id}: {e}")
+
             doc_record = self.get_document(doc_id)
             return DocumentUploadResponse(
                 success=True,
@@ -310,6 +317,13 @@ class IngestionService:
         json_path = self.processed_dir / f"{document_id}.json"
         if json_path.exists():
             json_path.unlink(missing_ok=True)
+
+        # Delete embeddings from ChromaDB (Phase 3)
+        try:
+            from app.rag.vector_store import chroma_vector_store
+            chroma_vector_store.delete_by_document_id(document_id)
+        except Exception as e:
+            logger.warning(f"Could not delete ChromaDB embeddings for {document_id}: {e}")
 
         logger.info(f"Deleted document {document_id} ('{doc.document_name}') and associated chunks.")
         return True

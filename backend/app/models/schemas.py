@@ -125,6 +125,47 @@ class IngestionStatsResponse(BaseModel):
     by_category: Dict[str, int]
 
 
+# ==============================================================================
+# Phase 3: Vector Indexing & Search Schemas
+# ==============================================================================
+
+class VectorSearchRequest(BaseModel):
+    """Payload for version-aware semantic vector search."""
+    query: str = Field(..., description="Inquiry search text")
+    product_version: Optional[str] = Field(None, description="Target version (e.g. v1.0, v2.0, v3.0)")
+    product_name: Optional[str] = Field("NexaDesk", description="Product name")
+    document_type: Optional[str] = Field(None, description="Filter by file extension (pdf, docx, txt, md)")
+    document_name: Optional[str] = Field(None, description="Filter by specific document filename")
+    top_k: int = Field(4, ge=1, le=20, description="Max candidate chunks to retrieve")
+
+
+class VectorSearchResultItem(BaseModel):
+    """Individual vector search result with similarity score and metadata."""
+    chunk_id: str
+    document_id: str
+    text_content: str
+    similarity_score: float
+    cosine_distance: float
+    rank: int
+    metadata: Dict[str, Any]
+
+
+class VectorSearchResponse(BaseModel):
+    """Response envelope for vector search queries."""
+    query: str
+    product_version: Optional[str]
+    total_results: int
+    results: List[VectorSearchResultItem]
+
+
+class IndexingSyncResponse(BaseModel):
+    """Response returned upon syncing SQLite chunks into ChromaDB."""
+    status: str
+    chunks_synced: int
+    total_indexed_in_chroma: int
+    by_version: Dict[str, int]
+
+
 class StandardApiResponse(BaseModel):
     """Standardized API response envelope."""
     success: bool = True
