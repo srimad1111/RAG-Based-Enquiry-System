@@ -262,3 +262,76 @@ class RetrievalComparisonResponse(BaseModel):
     rewritten_hybrid_results: List[RetrievedChunkItem]
     summary_analysis: Dict[str, Any]
 
+
+# ==============================================================================
+# Phase 5: LLM Response Generation, Grounded Synthesis & Citation Schemas
+# ==============================================================================
+
+class CitationItem(BaseModel):
+    """Structured verifiable citation reference attached to generated answers."""
+    citation_id: int
+    document_name: str
+    document_type: str
+    section_title: str
+    page_number: int
+    chunk_id: str
+    snippet: str
+    relevance_score: float
+
+
+class CustomerEnquiryRequest(BaseModel):
+    """Payload for conversational customer enquiry with LLM answer synthesis."""
+    question: str = Field(..., description="Customer question or support enquiry")
+    product_version: str = Field(..., description="Strict target product version, e.g. v1.0, v2.0, v3.0")
+    product_name: str = Field("NexaDesk", description="Product name")
+    conversation_id: Optional[str] = Field(None, description="Optional conversation ID for multi-turn thread tracking")
+    session_id: Optional[str] = Field(None, description="Alias for conversation_id")
+    retrieval_mode: str = Field("hybrid", description="'hybrid', 'dense_only', or 'sparse_only'")
+    top_k: int = Field(4, ge=1, le=10, description="Max candidate chunks for context window")
+    enable_rewriting: bool = Field(True, description="Enable query rewriting for informal inquiries")
+    temperature: float = Field(0.1, ge=0.0, le=1.0, description="Sampling temperature for LLM synthesis")
+    api_key: Optional[str] = Field(None, description="Optional user-supplied Gemini API key")
+
+
+class CustomerEnquiryResponse(BaseModel):
+    """
+    Final customer enquiry response envelope matching exact capstone specification:
+    - answer
+    - citations
+    - product_version
+    - rewritten_query
+    - retrieved_sources
+    - abstained
+    - conversation_id
+    """
+    answer: str
+    citations: List[CitationItem]
+    product_version: str
+    rewritten_query: Optional[str] = None
+    retrieved_sources: List[Dict[str, Any]] = []
+    abstained: bool = False
+    conversation_id: str
+    product_name: str = "NexaDesk"
+    original_query: str
+    model_used: str = "gemini-1.5-flash"
+    latency_ms: float = 0.0
+    timestamp: datetime = Field(default_factory=get_utc_now)
+
+
+class EnquiryHistoryItem(BaseModel):
+    """Stored enquiry log entry for audit and evaluation."""
+    id: int
+    session_id: str
+    user_query: str
+    product_version: str
+    response_text: str
+    sources_count: int
+    created_at: str
+
+
+class EnquiryHistoryResponse(BaseModel):
+    """List of historical customer inquiries."""
+    total_logs: int
+    history: List[EnquiryHistoryItem]
+
+

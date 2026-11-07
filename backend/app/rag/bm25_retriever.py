@@ -30,7 +30,7 @@ STOP_WORDS = {
     "we'll", "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where",
     "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "won't",
     "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours",
-    "yourself", "yourselves"
+    "yourself", "yourselves", "nexadesk", "documentation", "v1.0", "v2.0", "v3.0"
 }
 
 
@@ -163,7 +163,8 @@ class BM25Retriever:
             if document_name and chunk["document_name"].lower() != document_name.lower():
                 continue
 
-            if score > 0.0:
+            # Only retain candidates with genuine keyword presence
+            if score >= 0.3:
                 scored_candidates.append({
                     "chunk": chunk,
                     "raw_score": float(score)

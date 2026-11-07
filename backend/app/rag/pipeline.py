@@ -9,8 +9,10 @@ Orchestrates:
   6. Reciprocal Rank Fusion (RRF)
   7. Final Retrieved Context with Debugging & Transparency Diagnostics
 """
+import json
 import sqlite3
 import time
+import uuid
 from typing import Any, Dict, List, Optional
 
 from app.core.config import get_settings
@@ -18,6 +20,7 @@ from app.core.logging import logger
 from app.database.connection import get_sqlite_path
 from app.models.schemas import ChunkDetail, ChunkMetadata
 from app.rag.bm25_retriever import bm25_retriever
+from app.rag.generator import grounded_generator
 from app.rag.hybrid_retriever import hybrid_retriever
 from app.rag.query_rewriter import query_rewriter
 from app.rag.vector_store import chroma_vector_store
@@ -27,12 +30,17 @@ settings = get_settings()
 
 class VersionAwareRAGPipeline:
     """
-    Core RAG Pipeline implementing Query Rewriting and Version-Aware Hybrid Retrieval.
-    Enforces strict version isolation and delivers fully transparent retrieval diagnostics.
+    Core RAG Pipeline implementing Query Rewriting, Version-Aware Hybrid Retrieval,
+    and Grounded Answer Generation with Citations (Phase 5).
     """
 
     def __init__(self):
         self.vector_store = chroma_vector_store
+        self.bm25 = bm25_retriever
+        self.rewriter = query_rewriter
+        self.hybrid = hybrid_retriever
+        self.generator = grounded_generator
+        self.db_path = get_sqlite_path()
         self.bm25 = bm25_retriever
         self.rewriter = query_rewriter
         self.hybrid = hybrid_retriever
@@ -296,6 +304,106 @@ class VersionAwareRAGPipeline:
             top_k=top_k
         )
 
+    def answer_customer_enquiry(
+        self,
+        question: str,
+        product_version: str,
+        product_name: str = "NexaDesk",
+        conversation_id: Optional[str] = None,
+        retrieval_mode: str = "hybrid",
+        top_k: int = 4,
+        enable_rewriting: bool = True,
+        temperature: float = 0.1,
+        api_key: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Executes complete Phase 5 grounded question answering workflow:
+          1. Retrieve multi-turn conversation history for context continuity.
+          2. Execute fresh query rewriting and version-isolated hybrid retrieval.
+          3. Evaluate evidence sufficiency (abstention / refusal check).
+          4. Generate customer-friendly grounded answer with verifiable source citations.
+          5. Persist conversation turn and audit log in SQLite.
+        """
+        start_time = time.time()
+        conv_id = conversation_id or f"conv_{uuid.uuid4().hex[:12]}"
+
+        # 1. Fetch prior conversation history for conversational awareness
+        history_records = self.generator.get_conversation_history(conv_id, limit=6)
+        formatted_history = [
+            {"role": h["role"], "content": h["content"]} for h in history_records
+        ]
+
+        # 2. Execute fresh query rewriting & hybrid retrieval for this turn
+        retrieval_res = self.execute_hybrid_retrieval(
+            customer_question=question,
+            product_version=product_version,
+            product_name=product_name,
+            enable_query_rewriting=enable_rewriting,
+            retrieval_mode=retrieval_mode,
+            top_k=top_k
+        )
+
+        retrieved_chunks = retrieval_res.get("results", [])
+
+        # 3. Generate grounded answer with citations
+        gen_res = self.generator.generate_grounded_answer(
+            question=question,
+            product_version=product_version,
+            retrieved_chunks=retrieved_chunks,
+            conversation_history=formatted_history,
+            product_name=product_name,
+            temperature=temperature,
+            custom_api_key=api_key
+        )
+
+        elapsed_ms = round((time.time() - start_time) * 1000, 2)
+
+        # 4. Save conversation turns into SQLite
+        try:
+            self.generator.save_conversation_message(
+                conversation_id=conv_id,
+                role="user",
+                content=question,
+                product_version=product_version
+            )
+            self.generator.save_conversation_message(
+                conversation_id=conv_id,
+                role="assistant",
+                content=gen_res["answer"],
+                product_version=product_version,
+                rewritten_query=retrieval_res.get("rewritten_query"),
+                citations=gen_res.get("citations"),
+                abstained=gen_res.get("abstained", False)
+            )
+
+            # 5. Audit log in enquiry_logs
+            citations_data = [c.model_dump() for c in gen_res.get("citations", [])]
+            with sqlite3.connect(self.db_path) as conn:
+                conn.execute(
+                    """
+                    INSERT INTO enquiry_logs (session_id, user_query, product_version, response_text, sources)
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (conv_id, question, product_version, gen_res["answer"], json.dumps(citations_data))
+                )
+                conn.commit()
+        except Exception as e:
+            logger.warning(f"Error persisting enquiry log to SQLite: {e}")
+
+        return {
+            "answer": gen_res["answer"],
+            "citations": gen_res.get("citations", []),
+            "product_version": product_version,
+            "rewritten_query": retrieval_res.get("rewritten_query"),
+            "retrieved_sources": retrieved_chunks,
+            "abstained": gen_res.get("abstained", False),
+            "conversation_id": conv_id,
+            "product_name": product_name,
+            "original_query": question,
+            "model_used": gen_res.get("model_used", "gemini-1.5-flash"),
+            "latency_ms": elapsed_ms
+        }
+
     def get_pipeline_info(self) -> Dict[str, Any]:
         """Provides status of the vector indexing and hybrid retrieval pipeline."""
         chroma_status = self.vector_store.get_status()
@@ -313,10 +421,11 @@ class VersionAwareRAGPipeline:
             pass
 
         return {
-            "current_phase": "Phase 4: Query Rewriting and Version-Aware Hybrid Retrieval",
+            "current_phase": "Phase 5: Grounded Answer Generation with Citations",
             "pipeline_state": "active",
             "embedding_model": chroma_status["embedding_model"],
             "sparse_model": "BM25Okapi",
+            "generation_model": self.generator.model_name,
             "supported_versions": settings.SUPPORTED_PRODUCT_VERSIONS,
             "total_documents": sqlite_doc_count,
             "sqlite_chunks_count": sqlite_chunk_count,

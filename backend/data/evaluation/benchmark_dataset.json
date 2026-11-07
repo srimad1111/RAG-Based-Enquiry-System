@@ -1,0 +1,146 @@
+[
+  {
+    "id": "eval_001",
+    "query": "How do report exports work in NexaDesk?",
+    "product_version": "v1.0",
+    "expected_document": "reporting_and_exports.md",
+    "expected_section": "Manual Report Exports in v1.0",
+    "expected_keywords": ["manual", "csv", "export"],
+    "prohibited_keywords": ["scheduled", "recurring", "copilot", "sftp"],
+    "query_type": "version_differentiating",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_002",
+    "query": "Why can't I schedule my reports like before?",
+    "product_version": "v1.0",
+    "expected_document": "reporting_and_exports.md",
+    "expected_section": "Manual Report Exports in v1.0",
+    "expected_keywords": ["manual", "not supported", "csv"],
+    "prohibited_keywords": ["copilot", "ai autonomous"],
+    "query_type": "informal_complaint",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_003",
+    "query": "How do report exports work in NexaDesk?",
+    "product_version": "v2.0",
+    "expected_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled Report Exports in v2.0",
+    "expected_keywords": ["scheduled", "recurring", "email", "distribution"],
+    "prohibited_keywords": ["copilot", "anomaly"],
+    "query_type": "version_differentiating",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_004",
+    "query": "Can I set up scheduled recurring reports?",
+    "product_version": "v2.0",
+    "expected_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled Report Exports in v2.0",
+    "expected_keywords": ["scheduled", "daily", "weekly", "monthly", "pdf"],
+    "prohibited_keywords": ["copilot", "anomaly"],
+    "query_type": "feature_inquiry",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_005",
+    "query": "How do report exports work in NexaDesk?",
+    "product_version": "v3.0",
+    "expected_document": "reporting_and_exports.md",
+    "expected_section": "Scheduled and Automated Report Exports in v3.0",
+    "expected_keywords": ["automated", "copilot", "slack", "sftp", "summary"],
+    "prohibited_keywords": [],
+    "query_type": "version_differentiating",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_006",
+    "query": "What are the pricing tiers and monthly limits?",
+    "product_version": "v1.0",
+    "expected_document": "pricing_and_plans.md",
+    "expected_section": "Tier Overview",
+    "expected_keywords": ["free", "starter", "pro", "19", "49"],
+    "prohibited_keywords": ["growth", "scale", "copilot credits"],
+    "query_type": "pricing",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_007",
+    "query": "How much does NexaDesk cost per user and is there an annual discount?",
+    "product_version": "v2.0",
+    "expected_document": "pricing_and_quotas.txt",
+    "expected_section": "NexaDesk v2.0 Pricing Tiers",
+    "expected_keywords": ["starter", "growth", "29", "79", "15%"],
+    "prohibited_keywords": ["scale tier", "copilot credits"],
+    "query_type": "pricing",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_008",
+    "query": "What are the enterprise plans and AI copilot credit limits?",
+    "product_version": "v3.0",
+    "expected_document": "pricing_and_plans.md",
+    "expected_section": "Current Plans",
+    "expected_keywords": ["growth", "scale", "enterprise", "copilot credits", "20%"],
+    "prohibited_keywords": ["$19"],
+    "query_type": "pricing",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_009",
+    "query": "How does round robin ticket assignment work?",
+    "product_version": "v2.0",
+    "expected_document": "rbac_and_round_robin.docx",
+    "expected_section": "Doc Ccee7C6Ea12D Rbac And Round Robin",
+    "expected_keywords": ["round-robin", "routing", "distribution", "agent"],
+    "prohibited_keywords": [],
+    "query_type": "technical_configuration",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_010",
+    "query": "What user roles and permissions are supported?",
+    "product_version": "v1.0",
+    "expected_document": "user_roles_guide.docx",
+    "expected_section": "Standard Roles in v1.0",
+    "expected_keywords": ["administrator", "agent"],
+    "prohibited_keywords": ["custom roles", "sso", "nexaflow"],
+    "query_type": "security_and_roles",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_011",
+    "query": "What are the First Response SLA targets and policy rules?",
+    "product_version": "v1.0",
+    "expected_document": "email_and_sla_policy.pdf",
+    "expected_section": "Doc 16Da92764884 Email And Sla Policy",
+    "expected_keywords": ["sla", "urgent", "high", "hours"],
+    "prohibited_keywords": ["custom business hours per timezone"],
+    "query_type": "sla_and_policies",
+    "should_abstain": false
+  },
+  {
+    "id": "eval_012",
+    "query": "What is the authentic recipe for baking chocolate chip cookies?",
+    "product_version": "v3.0",
+    "expected_document": null,
+    "expected_section": null,
+    "expected_keywords": [],
+    "prohibited_keywords": [],
+    "query_type": "out_of_domain",
+    "should_abstain": true
+  },
+  {
+    "id": "eval_013",
+    "query": "How do I assemble an IKEA office desk with an allen wrench?",
+    "product_version": "v2.0",
+    "expected_document": null,
+    "expected_section": null,
+    "expected_keywords": [],
+    "prohibited_keywords": [],
+    "query_type": "out_of_domain",
+    "should_abstain": true
+  }
+]
+

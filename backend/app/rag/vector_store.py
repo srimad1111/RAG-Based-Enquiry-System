@@ -29,8 +29,9 @@ class LocalSentenceTransformerEmbeddingFunction(EmbeddingFunction[Documents]):
         self.model_name = model_name
         self._model = None
 
-    def name(self) -> str:
-        return f"sentence-transformers-{self.model_name}"
+    @classmethod
+    def name(cls) -> str:
+        return "sentence-transformers-all-MiniLM-L6-v2"
 
     def get_config(self) -> Dict[str, Any]:
         return {"model_name": self.model_name}

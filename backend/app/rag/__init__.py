@@ -8,6 +8,7 @@ from app.rag.vector_store import (
 from app.rag.bm25_retriever import BM25Retriever, bm25_retriever
 from app.rag.query_rewriter import GeminiQueryRewriter, query_rewriter
 from app.rag.hybrid_retriever import HybridRetriever, hybrid_retriever
+from app.rag.generator import GroundedAnswerGenerator, grounded_generator
 from app.rag.pipeline import (
     VersionAwareRAGPipeline,
     rag_pipeline,
@@ -26,6 +27,8 @@ __all__ = [
     "query_rewriter",
     "HybridRetriever",
     "hybrid_retriever",
+    "GroundedAnswerGenerator",
+    "grounded_generator",
     "VersionAwareRAGPipeline",
     "rag_pipeline",
     "rag_pipeline_stub",

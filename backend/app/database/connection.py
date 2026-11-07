@@ -80,11 +80,27 @@ def init_database() -> None:
                 )
             """)
 
+            # 5. Conversation messages table (Phase 5 Multi-turn conversation history)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS conversation_messages (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    conversation_id TEXT NOT NULL,
+                    role TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    product_version TEXT NOT NULL,
+                    rewritten_query TEXT,
+                    citations_json TEXT,
+                    abstained INTEGER DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
             # Create performance indices
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_docs_version ON documents (product_version)")
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_docs_hash ON documents (file_hash)")
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_docs_name_ver ON documents (product_name, product_version, document_name)")
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_chunks_doc_id ON document_chunks (document_id)")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_conv_msg_id ON conversation_messages (conversation_id)")
 
             # Seed initialization record
             cursor.execute("""
