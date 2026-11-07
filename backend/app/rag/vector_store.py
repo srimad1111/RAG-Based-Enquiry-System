@@ -35,6 +35,10 @@ class LocalSentenceTransformerEmbeddingFunction(EmbeddingFunction[Documents]):
     def get_config(self) -> Dict[str, Any]:
         return {"model_name": self.model_name}
 
+    @classmethod
+    def build_from_config(cls, config: Dict[str, Any]) -> "LocalSentenceTransformerEmbeddingFunction":
+        return cls(model_name=config.get("model_name", "all-MiniLM-L6-v2"))
+
     @property
     def model(self) -> SentenceTransformer:
         if self._model is None:

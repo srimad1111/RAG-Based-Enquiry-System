@@ -172,3 +172,93 @@ class StandardApiResponse(BaseModel):
     message: str
     data: Optional[Any] = None
     timestamp: datetime = Field(default_factory=get_utc_now)
+
+
+# ==============================================================================
+# Phase 4: Query Rewriting & Version-Aware Hybrid Retrieval Schemas
+# ==============================================================================
+
+class QueryRewriteRequest(BaseModel):
+    """Payload to request query transformation from informal to technical documentation phrasing."""
+    customer_question: str = Field(..., description="Informal customer question or raw inquiry")
+    product_name: str = Field("NexaDesk", description="Product name")
+    product_version: str = Field(..., description="Target product version, e.g. v1.0, v2.0, v3.0")
+
+
+class QueryRewriteResponse(BaseModel):
+    """Structured response from query rewriter module."""
+    original_query: str
+    rewritten_query: str
+    search_keywords: List[str]
+    intent: str
+    rewriter_used: str  # 'gemini-1.5-flash' or 'heuristic_fallback'
+    reasoning: Optional[str] = None
+
+
+class HybridRetrievalRequest(BaseModel):
+    """Request payload for version-aware hybrid retrieval."""
+    customer_question: str = Field(..., description="Customer inquiry or raw search query")
+    product_name: str = Field("NexaDesk", description="Product name")
+    product_version: str = Field(..., description="Strict target product version (e.g. v1.0, v2.0, v3.0)")
+    enable_query_rewriting: bool = Field(True, description="Whether to transform query via Gemini rewriter")
+    retrieval_mode: str = Field("hybrid", description="'hybrid', 'dense_only', or 'sparse_only'")
+    top_k: int = Field(4, ge=1, le=20, description="Number of candidate chunks to retrieve")
+    dense_weight: float = Field(0.6, ge=0.0, le=1.0, description="Weight for dense semantic vector retrieval in RRF")
+    sparse_weight: float = Field(0.4, ge=0.0, le=1.0, description="Weight for sparse BM25 retrieval in RRF")
+    similarity_threshold: float = Field(0.0, ge=0.0, le=1.0, description="Minimum similarity / RRF score threshold")
+    document_type: Optional[str] = Field(None, description="Filter by file type (pdf, docx, txt, md)")
+    document_name: Optional[str] = Field(None, description="Filter by specific document filename")
+
+
+class RetrievedChunkItem(BaseModel):
+    """Normalized retrieved chunk item with detailed scoring transparency."""
+    chunk_id: str
+    document_id: str
+    document_name: str
+    product_name: str
+    product_version: str
+    document_type: str
+    section_title: str
+    page_number: int
+    text_content: str
+    dense_score: Optional[float] = None
+    sparse_score: Optional[float] = None
+    rrf_score: float
+    rank: int
+    retrieval_method: str  # 'hybrid', 'dense', 'bm25'
+    metadata: Dict[str, Any] = {}
+
+
+class HybridRetrievalResponse(BaseModel):
+    """Structured response for hybrid retrieval containing debugging and transparency metrics."""
+    original_query: str
+    rewritten_query: Optional[str] = None
+    search_keywords: List[str] = []
+    product_name: str
+    product_version: str
+    retrieval_mode: str
+    total_retrieved: int
+    results: List[RetrievedChunkItem]
+    status_message: str
+    diagnostics: Dict[str, Any] = {}
+
+
+class RetrievalComparisonRequest(BaseModel):
+    """Request payload to compare retrieval approaches on the same query."""
+    customer_question: str = Field(..., description="Informal customer question to evaluate")
+    product_version: str = Field(..., description="Target version (v1.0, v2.0, v3.0)")
+    product_name: str = Field("NexaDesk", description="Product name")
+    top_k: int = Field(3, ge=1, le=10, description="Top K results per method")
+
+
+class RetrievalComparisonResponse(BaseModel):
+    """Side-by-side comparison across: raw dense, rewritten dense, and rewritten hybrid."""
+    original_query: str
+    rewritten_query: str
+    search_keywords: List[str]
+    product_version: str
+    raw_dense_results: List[RetrievedChunkItem]
+    rewritten_dense_results: List[RetrievedChunkItem]
+    rewritten_hybrid_results: List[RetrievedChunkItem]
+    summary_analysis: Dict[str, Any]
+
