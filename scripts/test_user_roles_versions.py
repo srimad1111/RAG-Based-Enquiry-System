@@ -68,11 +68,12 @@ def run_version_tests():
             "question": queries["v3.0"],
             "product_name": "NexaDesk",
             "product_version": "v3.0",
-            "expected_relevant_document": "enterprise_features.md",
-            "expected_section": "Enterprise Access Control",
-            "expected_key_facts": ["custom role creator", "saml", "scim"],
+            "expected_relevant_document": None,
+            "expected_section": None,
+            "expected_key_facts": [],
             "prohibited_keywords": [],
-            "should_abstain": False
+            "should_abstain": True,
+            "note": "NexaDesk v3.0 documentation does not document user roles. Correct behavior is strict version isolation and abstention."
         }
     }
 

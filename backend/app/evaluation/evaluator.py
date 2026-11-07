@@ -277,8 +277,23 @@ class ComprehensiveRAGEvaluator:
 
         version_correctness = 0.0 if (version_retrieval_leak or prohibited_leak) else 1.0
 
+        # Check if the expected document exists in this product version
+        doc_exists_in_version = True
+        if expected_doc:
+            with sqlite3.connect(self.pipeline.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT COUNT(*) FROM documents WHERE document_name = ? AND product_version = ?",
+                    (expected_doc, version)
+                )
+                doc_exists_in_version = (cursor.fetchone()[0] > 0)
+
         # 4. Abstention Evaluation
-        if should_abstain:
+        # If the expected document does not exist for the target product version,
+        # the system must abstain; answering would require hallucination or cross-version leakage.
+        effective_should_abstain = should_abstain or (not doc_exists_in_version)
+
+        if effective_should_abstain:
             abstention_correct = (abstained is True)
             faithfulness = 1.0 if abstention_correct else 0.0
             answer_relevance = 1.0 if abstention_correct else 0.0
