@@ -203,7 +203,7 @@ class EvaluationService:
 
     def get_report_by_name(self, run_file: Optional[str] = None) -> Optional[Dict[str, Any]]:
         """Fetch a specific evaluation report by filename, or the latest."""
-        if not run_file or run_file == "latest":
+        if not run_file or not isinstance(run_file, str) or run_file == "latest":
             live_file = EVALUATION_RESULTS_DIR / "runs" / "evaluation_summary_qwen_live_llm.json"
             if live_file.exists():
                 try:

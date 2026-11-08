@@ -48,7 +48,8 @@ def list_evaluation_runs() -> List[Dict[str, Any]]:
 )
 def get_evaluation_report(run_file: Optional[str] = Query(None, description="Specific run JSON filename")) -> Dict[str, Any]:
     try:
-        report = evaluation_service.get_report_by_name(run_file)
+        clean_run_file = run_file if isinstance(run_file, str) else None
+        report = evaluation_service.get_report_by_name(clean_run_file)
         if not report:
             return {
                 "status": "empty",

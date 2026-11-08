@@ -15,6 +15,10 @@ class DocumentService:
 
     def get_version_summary(self, version: str) -> DocumentVersionSummary:
         """Scan and summarize files for a given version directory."""
+        if version not in settings.SUPPORTED_PRODUCT_VERSIONS:
+            raise ValueError(
+                f"Unsupported version '{version}'. Must be one of: {settings.SUPPORTED_PRODUCT_VERSIONS}"
+            )
         version_dir = self.docs_base_path / version
         if not version_dir.exists():
             version_dir.mkdir(parents=True, exist_ok=True)

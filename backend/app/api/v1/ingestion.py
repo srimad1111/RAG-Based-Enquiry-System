@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List, Optional
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from app.core.config import get_settings
@@ -50,7 +51,13 @@ def get_ingestion_stats() -> IngestionStatsResponse:
     description="Returns source documentation files for a specific version: v1.0, v2.0, or v3.0."
 )
 def get_version_documents(version: str) -> DocumentVersionSummary:
-    return document_service.get_version_summary(version)
+    try:
+        return document_service.get_version_summary(version)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
 
 
 # ==============================================================================
@@ -77,13 +84,26 @@ def upload_document(
     chunk_overlap: Optional[int] = Form(None, description="Chunk overlap (default: 150)"),
     replace_existing: bool = Form(False, description="Replace if duplicate detected")
 ) -> DocumentUploadResponse:
-    filename = file.filename or "uploaded_document"
+    raw_filename = file.filename or "uploaded_document"
+    filename = Path(raw_filename).name
+    if not filename or filename in (".", ".."):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid filename provided."
+        )
+
+    MAX_FILE_SIZE = 25 * 1024 * 1024  # 25 MB
     try:
-        content_bytes = file.file.read()
+        content_bytes = file.file.read(MAX_FILE_SIZE + 1)
         if not content_bytes:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Uploaded file is empty."
+            )
+        if len(content_bytes) > MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail="Uploaded file exceeds maximum allowed size of 25MB."
             )
 
         upload_result = ingestion_service.ingest_file(

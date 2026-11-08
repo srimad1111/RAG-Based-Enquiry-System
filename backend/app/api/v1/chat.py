@@ -36,12 +36,30 @@ router = APIRouter(prefix="/chat", tags=["Customer Enquiry Assistant"])
     )
 )
 def submit_customer_enquiry(payload: CustomerEnquiryRequest) -> CustomerEnquiryResponse:
+    clean_question = payload.question.strip() if payload.question else ""
+    if not clean_question:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Customer enquiry question cannot be empty or whitespace only."
+        )
+    if len(clean_question) > 2000:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Customer enquiry question exceeds maximum allowed length of 2000 characters."
+        )
+    clean_version = payload.product_version.strip()
+    if clean_version not in settings.SUPPORTED_PRODUCT_VERSIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported product version '{payload.product_version}'. Must be one of: {settings.SUPPORTED_PRODUCT_VERSIONS}"
+        )
+
     try:
         conv_id = payload.conversation_id or payload.session_id
 
         result = rag_pipeline.answer_customer_enquiry(
-            question=payload.question,
-            product_version=payload.product_version,
+            question=clean_question,
+            product_version=clean_version,
             product_name=payload.product_name,
             conversation_id=conv_id,
             retrieval_mode=payload.retrieval_mode,
@@ -52,6 +70,8 @@ def submit_customer_enquiry(payload: CustomerEnquiryRequest) -> CustomerEnquiryR
         )
 
         return CustomerEnquiryResponse(**result)
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error processing customer enquiry '{payload.question}': {e}", exc_info=True)
         raise HTTPException(

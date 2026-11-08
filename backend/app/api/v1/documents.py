@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
 from app.models.schemas import DocumentOverviewResponse, DocumentVersionSummary
 from app.services.document_service import document_service
 
@@ -22,4 +22,10 @@ def get_documents_overview() -> DocumentOverviewResponse:
     description="Returns file list for a specific version: v1.0, v2.0, or v3.0."
 )
 def get_version_documents(version: str) -> DocumentVersionSummary:
-    return document_service.get_version_summary(version)
+    try:
+        return document_service.get_version_summary(version)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )

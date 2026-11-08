@@ -35,7 +35,11 @@ class OllamaProvider(BaseLLMProvider):
         timeout: Optional[int] = None
     ):
         self._model_name = model_name or settings.OLLAMA_MODEL
-        self._base_url = (base_url or settings.OLLAMA_BASE_URL).rstrip("/")
+        raw_url = (base_url or settings.OLLAMA_BASE_URL).rstrip("/")
+        # Normalize localhost to 127.0.0.1 to avoid IPv6 resolution failures on Windows
+        if "localhost" in raw_url:
+            raw_url = raw_url.replace("localhost", "127.0.0.1")
+        self._base_url = raw_url
         self._timeout = timeout or settings.OLLAMA_TIMEOUT
 
     @property
@@ -84,7 +88,7 @@ class OllamaProvider(BaseLLMProvider):
             "think": False,
             "options": {
                 "temperature": 0.1,
-                "num_predict": 512
+                "num_predict": 128
             }
         }
 

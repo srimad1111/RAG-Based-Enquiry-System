@@ -91,23 +91,25 @@ def test_ollama_provider_interface_and_offline_resilience():
     assert health["available"] is False
     assert health["status"] in ["offline", "error"]
 
-    # Rewrite on offline daemon must fall back seamlessly
+    # Rewrite on offline daemon must fall back seamlessly when allow_fallback=True
     rewrite_res = provider.rewrite_query(
         customer_question="How do I configure SLA breach policies?",
         product_name="NexaDesk",
-        product_version="v2.0"
+        product_version="v2.0",
+        allow_fallback=True
     )
     assert "rewritten_query" in rewrite_res
     assert "search_keywords" in rewrite_res
     assert "intent" in rewrite_res
     assert "ollama_fallback" in rewrite_res["rewriter_used"]
 
-    # Generate answer on offline daemon must fall back seamlessly
+    # Generate answer on offline daemon must fall back seamlessly when allow_fallback=True
     answer = provider.generate_answer(
         question="How do I export reports?",
         product_version="v1.0",
         product_name="NexaDesk",
-        chunks=MOCK_CHUNKS
+        chunks=MOCK_CHUNKS,
+        allow_fallback=True
     )
     assert isinstance(answer, str)
     assert "Manual Report Exports in v1.0" in answer
@@ -180,7 +182,7 @@ def test_provider_factory_resolution_and_parity():
     # Verify response schema parity on query rewriting
     q = "Where can I view active SLA targets?"
     res_gemini = gemini.rewrite_query(q, "NexaDesk", "v2.0")
-    res_ollama = ollama.rewrite_query(q, "NexaDesk", "v2.0")
+    res_ollama = ollama.rewrite_query(q, "NexaDesk", "v2.0", allow_fallback=True)
 
     expected_keys = {"original_query", "rewritten_query", "search_keywords", "intent", "rewriter_used", "reasoning"}
     assert set(res_gemini.keys()) == expected_keys

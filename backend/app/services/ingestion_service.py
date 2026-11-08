@@ -125,10 +125,18 @@ class IngestionService:
         # Generate unique document ID
         doc_id = f"doc_{uuid.uuid4().hex[:12]}"
 
-        # Save binary to storage/uploads/<version>/<doc_id>_<filename>
-        target_version_dir = self.uploads_dir / clean_version
+        # Sanitize filename against directory traversal
+        clean_filename = Path(filename).name
+        if not clean_filename or clean_filename in (".", ".."):
+            clean_filename = f"doc_{uuid.uuid4().hex[:8]}.txt"
+
+        # Save binary to storage/uploads/<version>/<doc_id>_<clean_filename>
+        target_version_dir = (self.uploads_dir / clean_version).resolve()
         ensure_directory_exists(target_version_dir)
-        saved_file_path = target_version_dir / f"{doc_id}_{filename}"
+        saved_file_path = (target_version_dir / f"{doc_id}_{clean_filename}").resolve()
+        if not saved_file_path.is_relative_to(target_version_dir):
+            raise ValueError(f"Security error: Invalid file path traversal attempt in '{filename}'")
+
         saved_file_path.write_bytes(file_bytes)
 
         # Parse document into structural content blocks
